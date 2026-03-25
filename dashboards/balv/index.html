@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>BALV Project Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+@keyframes pulse{0%,100%{opacity:.2}50%{opacity:1}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+html,body{height:100%;background:#080b0f;color:#e0e8f0;font-family:'DM Sans',sans-serif;font-size:15px;line-height:1.65}
+.app{min-height:100vh;display:flex;flex-direction:column}
+.topbar{background:#0c1018;border-bottom:1px solid #1a2430;padding:0 32px;display:flex;align-items:center;height:56px;flex-shrink:0;position:sticky;top:0;z-index:50}
+.topbar-logo{font-size:18px;font-weight:600;color:#5a9fd4;letter-spacing:.01em;margin-right:auto}
+.topbar-meta{font-size:12px;color:#2a3848;letter-spacing:.15em;text-transform:uppercase;margin-right:24px}
+.tabs{display:flex;height:100%;margin-left:32px}
+.tab{display:flex;align-items:center;padding:0 20px;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:#2a3848;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap}
+.tab:hover{color:#4a6878}
+.tab.active{color:#5a9fd4;border-bottom-color:#5a9fd4}
+.content{flex:1;overflow-y:auto;padding:32px}
+.inner{max-width:1100px;margin:0 auto}
+/* Stats */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px}
+.stat-card{background:#0c1018;border:1px solid #1a2430;padding:20px 24px}
+.stat-label{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:#2a3848;margin-bottom:10px}
+.stat-value{font-size:38px;font-weight:300;color:#e0e8f0;line-height:1}
+.stat-sub{font-size:13px;color:#2a3848;margin-top:6px}
+.stat-value.blue{color:#5a9fd4}
+.stat-value.green{color:#5abf82}
+.stat-value.red{color:#c46060}
+/* Sections */
+.section-header{display:flex;align-items:baseline;gap:12px;margin-bottom:16px}
+.section-title{font-size:20px;font-weight:500;color:#e0e8f0}
+.section-sub{font-size:13px;color:#2a3848}
+/* Phase grid */
+.phase-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:32px}
+.phase-card{padding:14px 16px;border:1px solid #1a2430;background:#0a0e14;transition:border-color .2s}
+.phase-card.complete{background:#0d1f14;border-color:#1e4030}
+.phase-card.in_progress{background:#0e1620;border-color:#1e3050}
+.phase-card.blocked{background:#1a0d0d;border-color:#3d1818}
+.phase-card.not_started{background:#0a0e14;border-color:#1a2430}
+.phase-num{font-size:11px;letter-spacing:.18em;color:#2a3848;margin-bottom:5px}
+.phase-name{font-size:15px;font-weight:500;color:#e0e8f0;margin-bottom:5px}
+.phase-desc{font-size:13px;color:#2a3848;line-height:1.5}
+.phase-status{display:inline-block;font-size:11px;letter-spacing:.13em;text-transform:uppercase;padding:3px 10px;margin-top:10px}
+.phase-card.complete .phase-status{background:#0d1f14;border:1px solid #1e4030;color:#5abf82}
+.phase-card.in_progress .phase-status{background:#0e1620;border:1px solid #1e3050;color:#5a9fd4}
+.phase-card.blocked .phase-status{background:#1a0d0d;border:1px solid #3d1818;color:#c46060}
+.phase-card.not_started .phase-status{background:#0a0e14;border:1px solid #1a2430;color:#2a3848}
+/* Blockers */
+.blockers-panel{background:#140d0d;border:1px solid #3d1818;padding:20px 24px;margin-bottom:32px}
+.blockers-title{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:#c46060;margin-bottom:14px}
+.blocker-item{display:flex;gap:12px;align-items:flex-start;padding:11px 0;border-bottom:1px solid #2a1010}
+.blocker-item:last-child{border-bottom:none}
+.blocker-decision{font-size:15px;font-weight:500;color:#e0e8f0;flex:1}
+.blocker-blocks{font-size:13px;color:#3a2828;margin-top:3px}
+/* Decisions */
+.decisions-list{display:flex;flex-direction:column;gap:16px}
+.decision-card{background:#0c1018;border:1px solid #1a2430;padding:24px}
+.decision-card.resolved{opacity:.65;border-color:#1e4030}
+.decision-header{display:flex;align-items:flex-start;gap:12px;margin-bottom:12px}
+.decision-tier{font-size:11px;letter-spacing:.18em;text-transform:uppercase;padding:3px 10px;flex-shrink:0;margin-top:2px}
+.tier-1{background:#140d0d;border:1px solid #3d1818;color:#c46060}
+.tier-2{background:#0e1620;border:1px solid #1e3050;color:#5a9fd4}
+.decision-title{font-size:18px;font-weight:500;color:#e0e8f0;flex:1}
+.decision-desc{font-size:14px;color:#4a6878;line-height:1.75;margin-bottom:14px}
+.decision-options{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.decision-option{font-size:13px;color:#4a6878;padding:9px 13px;background:#080b0f;border-left:2px solid #1a2430}
+.decision-blocks{font-size:12px;color:#2a3848;margin-bottom:16px}
+.decision-blocks span{display:inline-block;background:#080b0f;border:1px solid #1a2430;padding:2px 8px;margin-right:6px;margin-bottom:4px}
+.resolve-btn{background:#5a9fd4;color:#080b0f;border:none;padding:9px 22px;font-size:11px;letter-spacing:.18em;text-transform:uppercase;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer;transition:opacity .2s}
+.resolve-btn:hover{opacity:.85}
+.resolved-badge{display:flex;align-items:center;gap:8px;font-size:13px;color:#5abf82}
+.resolved-note{font-size:14px;color:#4a7858;font-style:italic;margin-top:10px;padding:12px 16px;background:#0d1f14;border-left:2px solid #1e4030}
+.resolve-form{margin-top:16px;padding:18px;background:#080b0f;border:1px solid #1a2430}
+.form-label{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:#5a9fd4;margin-bottom:8px;display:block}
+.form-input{width:100%;background:#0c1018;border:1px solid #1a2430;color:#e0e8f0;padding:11px 13px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;margin-bottom:12px;transition:border-color .2s}
+.form-input:focus{border-color:#5a9fd444}
+.form-textarea{width:100%;background:#0c1018;border:1px solid #1a2430;color:#e0e8f0;padding:11px 13px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;margin-bottom:12px;resize:vertical;min-height:90px;transition:border-color .2s}
+.form-textarea:focus{border-color:#5a9fd444}
+.form-row{display:flex;gap:10px}
+.form-submit{background:#5a9fd4;color:#080b0f;border:none;padding:10px 24px;font-size:11px;letter-spacing:.18em;text-transform:uppercase;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer}
+.form-cancel{background:transparent;color:#2a3848;border:1px solid #1a2430;padding:10px 18px;font-size:11px;letter-spacing:.18em;text-transform:uppercase;font-family:'DM Sans',sans-serif;cursor:pointer}
+/* Documents */
+.docs-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.doc-card{background:#0c1018;border:1px solid #1a2430;padding:22px;display:flex;flex-direction:column;gap:10px;transition:border-color .2s}
+.doc-card:hover{border-color:#5a9fd444}
+.doc-name{font-size:16px;font-weight:500;color:#e0e8f0}
+.doc-desc{font-size:13px;color:#2a3848;line-height:1.65;flex:1}
+.doc-status{display:inline-block;font-size:11px;letter-spacing:.15em;text-transform:uppercase;padding:3px 10px}
+.doc-status.complete{background:#0d1f14;border:1px solid #1e4030;color:#5abf82}
+.doc-status.in_progress{background:#0e1620;border:1px solid #1e3050;color:#5a9fd4}
+.doc-status.not_started{background:#0a0e14;border:1px solid #1a2430;color:#2a3848}
+.doc-link{font-size:12px;color:#5a9fd4;text-decoration:none;letter-spacing:.1em;text-transform:uppercase}
+.doc-link:hover{text-decoration:underline}
+/* Shared */
+.notice{background:#0a0e14;border:1px solid #1a2430;padding:13px 18px;font-size:14px;color:#2a3848;line-height:1.65;margin-bottom:20px}
+.error-notice{background:#140d0d;border:1px solid #3d1818;padding:13px 18px;font-size:14px;color:#c46060;line-height:1.65;margin-bottom:20px}
+.divider{border:none;border-top:1px solid #1a2430;margin:28px 0}
+.fade-in{animation:fadeUp .3s ease}
+/* Interview */
+.interview-wrap{background:#0c1018;border:1px solid #1a2430;display:flex;flex-direction:column;height:calc(100vh - 160px)}
+.interview-header{padding:16px 24px;border-bottom:1px solid #1a2430;display:flex;justify-content:space-between;align-items:center}
+.interview-title{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:#5a9fd4}
+.interview-body{flex:1;display:flex;flex-direction:column;overflow:hidden;padding:0 24px}
+.landing-inner{padding:32px 0;max-width:520px}
+.int-eyebrow{font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:#5a9fd4;margin-bottom:12px}
+.int-title{font-size:28px;font-weight:500;color:#e0e8f0;margin-bottom:10px;line-height:1.2}
+.int-sub{font-size:14px;color:#2a3848;line-height:1.8;margin-bottom:28px}
+.int-card{background:#080b0f;border:1px solid #1a2430;padding:24px}
+.int-lbl{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:#5a9fd4;margin-bottom:8px;display:block}
+.int-input{width:100%;background:#0c1018;border:1px solid #1a2430;color:#e0e8f0;padding:13px 15px;font-size:15px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s}
+.int-input:focus{border-color:#5a9fd444}
+.int-btn{background:#5a9fd4;color:#080b0f;border:none;padding:13px 28px;font-size:11px;letter-spacing:.18em;text-transform:uppercase;font-family:'DM Sans',sans-serif;font-weight:700;cursor:pointer;margin-top:12px;width:100%;transition:opacity .2s}
+.int-btn:hover{opacity:.85}
+.int-btn:disabled{background:#1a2430;color:#2a3848;cursor:default;opacity:1}
+.chip{display:inline-block;background:#0d1f14;border:1px solid #1e4030;padding:3px 11px;font-size:11px;font-family:'DM Sans',sans-serif;color:#5abf82;margin-right:6px;margin-bottom:6px}
+.chat-wrap{flex:1;overflow-y:auto;padding:20px 0;display:flex;flex-direction:column;gap:14px;scrollbar-width:thin;scrollbar-color:#1a2430 transparent}
+.bubble-ai{max-width:88%;padding:14px 18px;font-size:15px;line-height:1.78;font-family:'DM Sans',sans-serif;align-self:flex-start;background:#080b0f;border:1px solid #1a2430;color:#d0d8e8;white-space:pre-wrap;animation:fadeUp .3s ease}
+.bubble-user{max-width:88%;padding:14px 18px;font-size:15px;line-height:1.78;font-family:'DM Sans',sans-serif;align-self:flex-end;background:#0e1620;border:1px solid #1e3050;color:#8ab4d4;white-space:pre-wrap;animation:fadeUp .3s ease}
+.dot{display:inline-block;width:5px;height:5px;border-radius:50%;background:#5a9fd4;margin:0 2px;animation:pulse 1.4s ease-in-out infinite}
+.send-row{display:flex;gap:10px;border-top:1px solid #1a2430;padding-top:16px;flex-shrink:0}
+.send-input{flex:1;background:#080b0f;border:1px solid #1a2430;color:#e0e8f0;padding:12px 15px;font-size:15px;font-family:'DM Sans',sans-serif;outline:none}
+.send-input:focus{border-color:#5a9fd444}
+.send-btn{background:#5a9fd4;color:#080b0f;border:none;padding:0 22px;font-size:12px;font-family:'DM Sans',sans-serif;font-weight:700;cursor:pointer;flex-shrink:0}
+.send-btn:disabled{background:#1a2430;color:#2a3848;cursor:default}
+.complete-inner{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:48px 0;flex:1}
+.outline-btn{background:transparent;border:1px solid #5a9fd444;color:#5a9fd4;padding:10px 24px;font-size:10px;letter-spacing:.18em;text-transform:uppercase;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer;margin-top:8px}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+
+// ══════════════════════════════════════════════════════════════════════════
+// CONFIG — edit this block only
+// ══════════════════════════════════════════════════════════════════════════
+const CONFIG = {
+  project: {
+    name: "BALV",
+    tagline: "Real-time mental health support app — guided Identify → Process → Resolution flow powered by the BALV emotional needs framework (Belonging, Acceptance, Love, Validation)",
+    version: "0.1.0",
+  },
+
+  supabase: {
+    url: "https://kxjzmzjoysiiyidlqzts.supabase.co",
+    key: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt4anptempveXNpaXlpZGxxenRzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMzQ3OTYsImV4cCI6MjA4OTgxMDc5Nn0.2VWsV7Om9ElN4dZu82uAuD7_5mo-JSn2F8bg5VZRfnM",
+  },
+
+  anthropic: {
+    key: "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",
+  },
+
+  phases: [
+    { id:"mha-phase-1",  n:1,  name:"Discovery",             desc:"App concept, user avatar, BALV framework, MVP features, compliance",  status:"complete"    },
+    { id:"mha-phase-2",  n:2,  name:"Design Vision",          desc:"Aesthetic direction, component inventory, design system",   status:"not_started" },
+    { id:"mha-phase-3",  n:3,  name:"Competitive Research",   desc:"Market research — Woebot, Wysa, Headspace, Calm, etc.",     status:"not_started" },
+    { id:"mha-phase-4",  n:4,  name:"Tech Stack",             desc:"Stack decision — mobile (iOS/Android), web, AI layer",      status:"not_started" },
+    { id:"mha-phase-5",  n:5,  name:"Data Architecture",      desc:"Entity mapping, schema, privacy-first data model",          status:"not_started" },
+    { id:"mha-phase-6",  n:6,  name:"Integration Mapping",    desc:"AI/LLM layer, push notifications, wearables, auth",         status:"not_started" },
+    { id:"mha-phase-7",  n:7,  name:"Project Scaffolding",    desc:"Folder structure, naming conventions, coding standards",    status:"not_started" },
+    { id:"mha-phase-8",  n:8,  name:"CLAUDE.md Setup",        desc:"Claude Code instructions, work habits, session protocols",  status:"not_started" },
+    { id:"mha-phase-9",  n:9,  name:"Safety & Compliance",    desc:"Crisis escalation, HIPAA review, FDA classification",       status:"not_started" },
+    { id:"mha-phase-10", n:10, name:"Implementation Guide",   desc:"Human-readable project overview and rationale doc",         status:"not_started" },
+    { id:"mha-phase-11", n:11, name:"Feature Roadmap",        desc:"Dependency-mapped feature list — MVP vs Phase 2",           status:"not_started" },
+    { id:"mha-phase-12", n:12, name:"Sub-Agent Strategy",     desc:"Parallelization decisions for Claude Code build",           status:"not_started" },
+    { id:"mha-phase-13", n:13, name:"Feature Guides",         desc:"Detailed implementation guide per major feature",           status:"not_started" },
+    { id:"mha-phase-14", n:14, name:"Session TODO System",    desc:"Rolling task list Claude Code reads at session start",      status:"not_started" },
+    { id:"mha-phase-15", n:15, name:"Legal & Compliance",     desc:"Privacy policy, data retention, clinical disclaimers",      status:"not_started" },
+  ],
+
+  decisions: [
+    {
+      id: "mha-decision-1",
+      tier: 1,
+      title: "Tech Stack & Platform",
+      desc: "The app needs to run on iOS, Android, and potentially web. The stack decision determines the entire build approach — React Native, Flutter, or native per platform.",
+      options: [
+        "A — React Native: single codebase for iOS + Android + web, TypeScript, largest talent pool",
+        "B — Flutter: single codebase, excellent performance, Dart language",
+        "C — Native per platform: best performance, highest cost and complexity",
+      ],
+      blocks: ["Project Scaffolding","Build Timeline","Developer Requirements","CLAUDE.md Setup"],
+    },
+    {
+      id: "mha-decision-2",
+      tier: 1,
+      title: "BALV Engine — AI or Rules-Based?",
+      desc: "The BALV emotional needs mapping engine is the core differentiator. It can be built as a deterministic rules-based system or powered by an LLM for more nuanced mapping.",
+      options: [
+        "A — Rules-based: faster to build, predictable, easier to audit clinically, lower cost",
+        "B — LLM-powered: more nuanced, adaptive, higher cost, harder to clinically validate",
+        "C — Hybrid: rules-based core with LLM for edge cases and follow-up",
+      ],
+      blocks: ["Feature Guides","Data Architecture","Cost Model","Clinical Validation"],
+    },
+    {
+      id: "mha-decision-3",
+      tier: 1,
+      title: "Monetization Model",
+      desc: "The product brief did not fully resolve how the app makes money. This needs to be decided before architecture begins as it affects auth, user accounts, and feature gating.",
+      options: [
+        "A — Freemium: core flow free, premium features (history, patterns, therapist integration) paid",
+        "B — Subscription only: full access for monthly/annual fee",
+        "C — B2B: sell to employers, universities, or healthcare systems",
+        "D — Hybrid B2C + B2B",
+      ],
+      blocks: ["Auth Architecture","Feature Gating","Stripe Integration","Go-to-Market"],
+    },
+    {
+      id: "mha-decision-4",
+      tier: 1,
+      title: "Crisis & Safety Protocol",
+      desc: "Mental health apps must have a defined response to crisis expressions (suicidal ideation, self-harm). This is both a safety requirement and a potential regulatory trigger.",
+      options: [
+        "A — Passive: display crisis resources (988, Crisis Text Line) when risk keywords detected",
+        "B — Active: pause session, require acknowledgment of safety resources before continuing",
+        "C — Escalation: notify designated contact or therapist if connected to practitioner",
+      ],
+      blocks: ["Safety & Compliance","Feature Guides","Legal & Compliance","Practitioner Integration"],
+    },
+    {
+      id: "mha-decision-5",
+      tier: 2,
+      title: "Practitioner Integration — MVP or Phase 2?",
+      desc: "The product brief describes optional therapist oversight. Should this be built for launch or deferred to give the core consumer product time to prove itself?",
+      options: [
+        "A — Defer to Phase 2: launch consumer-only, add practitioner layer after product-market fit",
+        "B — Build for MVP: practitioner dashboard, session sharing, messaging from day one",
+      ],
+      blocks: ["Feature Roadmap","Data Architecture","HIPAA Requirements","Launch Timeline"],
+    },
+    {
+      id: "mha-decision-6",
+      tier: 2,
+      title: "Domain & Brand Assets",
+      desc: "BALV is confirmed as the app name. The domain needs to be purchased and brand assets (logo, color palette, typography) need to be created before any public-facing work begins.",
+      options: [
+        "A — Purchase balv.app or balv.io as the primary domain",
+        "B — Purchase a different domain (e.g. balvapp.com, getbalv.com)",
+      ],
+      blocks: ["Brand Identity","Domain Purchase","App Store Presence","Marketing"],
+    },
+  ],
+
+  documents: [
+    { name:"Product Brief",        desc:"Full discovery output — concept, avatar, MVP features, AI requirements, compliance flags", status:"complete",    url:"#" },
+    { name:"Discovery Interview",  desc:"Raw interview transcript — Sarah Thomas",                                                  status:"complete",    url:"#" },
+    { name:"CLAUDE.md",            desc:"Claude Code project instructions — to be created after tech stack decision",              status:"not_started", url:"#" },
+    { name:"TechStack.md",         desc:"Canonical tech stack — pending Decision 1",                                               status:"not_started", url:"#" },
+    { name:"DATA_MODEL.md",        desc:"Privacy-first data model and schema — pending tech stack",                                status:"not_started", url:"#" },
+    { name:"SAFETY_PROTOCOL.md",   desc:"Crisis escalation rules, keyword triggers, response flows",                              status:"not_started", url:"#" },
+    { name:"BALV_SPEC.md",         desc:"Technical specification for the BALV emotional needs mapping engine",                    status:"not_started", url:"#" },
+    { name:"SEO_STRATEGY.md",      desc:"App Store optimization, web presence strategy",                                          status:"not_started", url:"#" },
+  ],
+
+  interview: {
+    coreQuestions: [
+      "What does success look like for this app in 2 years — describe it as specifically as you can.",
+      "Walk me through a typical session in the app — what does the user open it to do?",
+      "What are the absolute must-have features for launch vs. what can wait for v2?",
+      "How should the BALV engine work — rules-based, AI-powered, or hybrid?",
+      "What clinical frameworks should ground the interventions — CBT, ACT, DBT, CFT?",
+      "What role should a therapist or practitioner play, if any, at launch?",
+      "How do you envision making money from this app?",
+      "What device features are essential — notifications, biometrics, wearables?",
+      "What is your plan for HIPAA, crisis protocols, and clinical validation?",
+      "What's one thing about this app that excites you most?",
+    ],
+  },
+};
+// ══════════════════════════════════════════════════════════════════════════
+// END CONFIG
+// ══════════════════════════════════════════════════════════════════════════
+
+const sb = supabase.createClient(CONFIG.supabase.url, CONFIG.supabase.key);
+
+async function dbLoadDecisions() {
+  const { data, error } = await sb.from("mha_decisions").select("*").eq("project_name", CONFIG.project.name);
+  if (error) throw error;
+  return data || [];
+}
+
+async function dbSeedDecisions() {
+  const rows = CONFIG.decisions.map(d => ({
+    id: d.id, project_name: CONFIG.project.name, status: "open",
+    resolution: null, resolved_by: null, resolved_at: null,
+  }));
+  const { error } = await sb.from("mha_decisions").upsert(rows, { onConflict: "id", ignoreDuplicates: true });
+  if (error) throw error;
+}
+
+async function dbResolveDecision(id, resolvedBy, resolution) {
+  const { error } = await sb.from("mha_decisions")
+    .update({ status: "resolved", resolution, resolved_by: resolvedBy, resolved_at: new Date().toISOString() })
+    .eq("id", id);
+  if (error) throw error;
+}
+
+async function dbGetCompletedInterviews() {
+  const { data, error } = await sb.from("mha_interviews").select("name");
+  if (error) return [];
+  return [...new Set((data || []).map(r => r.name))];
+}
+
+function App() {
+  const [tab, setTab]                   = useState("overview");
+  const [decisions, setDecisions]       = useState({});
+  const [interviews, setInterviews]     = useState([]);
+  const [loading, setLoading]           = useState(true);
+  const [dbError, setDbError]           = useState("");
+
+  useEffect(() => { init(); }, []);
+
+  async function init() {
+    setLoading(true);
+    try {
+      await dbSeedDecisions();
+      const rows = await dbLoadDecisions();
+      const map = {};
+      rows.forEach(r => { map[r.id] = r; });
+      setDecisions(map);
+      const names = await dbGetCompletedInterviews();
+      setInterviews(names);
+    } catch(e) {
+      setDbError("Database connection failed. Check Supabase configuration.");
+    }
+    setLoading(false);
+  }
+
+  async function resolveDecision(id, resolvedBy, resolution) {
+    await dbResolveDecision(id, resolvedBy, resolution);
+    setDecisions(prev => ({ ...prev, [id]: { ...prev[id], status: "resolved", resolution, resolved_by: resolvedBy } }));
+  }
+
+  const completedPhases  = CONFIG.phases.filter(p => p.status === "complete").length;
+  const inProgressPhases = CONFIG.phases.filter(p => p.status === "in_progress").length;
+  const openDecisions    = CONFIG.decisions.filter(d => !decisions[d.id] || decisions[d.id]?.status === "open").length;
+
+  const TABS = [
+    { id:"overview",  label:"Overview"  },
+    { id:"decisions", label:`Decisions${openDecisions > 0 ? ` (${openDecisions})` : ""}` },
+    { id:"documents", label:"Documents" },
+  ];
+
+  return (
+    <div className="app">
+      <div className="topbar">
+        <div className="topbar-logo">{CONFIG.project.name}</div>
+        <div className="topbar-meta">v{CONFIG.project.version}</div>
+        <div className="tabs">
+          {TABS.map(t => (
+            <div key={t.id} className={`tab${tab===t.id?" active":""}`} onClick={()=>setTab(t.id)}>{t.label}</div>
+          ))}
+        </div>
+      </div>
+      <div className="content">
+        <div className="inner">
+          {dbError && <div className="error-notice">{dbError}</div>}
+          {loading && <div className="notice">Connecting to database…</div>}
+          {!loading && tab==="overview" && <OverviewTab decisions={decisions} interviews={interviews} completedPhases={completedPhases} inProgressPhases={inProgressPhases} openDecisions={openDecisions}/>}
+          {!loading && tab==="decisions" && <DecisionsTab decisions={decisions} onResolve={resolveDecision}/>}
+          {tab==="documents" && <DocumentsTab/>}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function OverviewTab({ decisions, interviews, completedPhases, inProgressPhases, openDecisions }) {
+  const openDecisionsList = CONFIG.decisions.filter(d => !decisions[d.id] || decisions[d.id]?.status === "open");
+  return (
+    <div className="fade-in">
+      <div className="stats-row">
+        <div className="stat-card"><div className="stat-label">Phases Complete</div><div className={`stat-value${completedPhases>0?" green":""}`}>{completedPhases}</div><div className="stat-sub">of {CONFIG.phases.length} total</div></div>
+        <div className="stat-card"><div className="stat-label">In Progress</div><div className={`stat-value${inProgressPhases>0?" blue":""}`}>{inProgressPhases}</div><div className="stat-sub">phases active</div></div>
+        <div className="stat-card"><div className="stat-label">Open Decisions</div><div className={`stat-value${openDecisions>0?" red":" green"}`}>{openDecisions}</div><div className="stat-sub">{openDecisions>0?"blocking progress":"all resolved"}</div></div>
+        <div className="stat-card"><div className="stat-label">Interviews Done</div><div className="stat-value blue">{interviews.length}</div><div className="stat-sub">discovery sessions</div></div>
+      </div>
+
+      {openDecisionsList.length > 0 && (
+        <div style={{marginBottom:"32px"}}>
+          <div className="section-header"><div className="section-title">Blocking Decisions</div><div className="section-sub">Resolve these before build can continue</div></div>
+          <div className="blockers-panel">
+            <div className="blockers-title">⚠ Open decisions blocking progress</div>
+            {openDecisionsList.map(d=>(
+              <div key={d.id} className="blocker-item">
+                <div style={{flex:1}}>
+                  <div className="blocker-decision">{d.title}</div>
+                  <div className="blocker-blocks">Blocks: {d.blocks.join(" · ")}</div>
+                </div>
+                <div style={{fontSize:"11px",color:d.tier===1?"#c46060":"#5a9fd4",letterSpacing:".15em",textTransform:"uppercase",flexShrink:0}}>{d.tier===1?"Priority":"Important"}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div style={{marginBottom:"16px"}}><div className="section-header"><div className="section-title">Playbook Phases</div><div className="section-sub">15-phase build process</div></div></div>
+      <div className="phase-grid">
+        {CONFIG.phases.map(p=>(
+          <div key={p.id} className={`phase-card ${p.status}`}>
+            <div className="phase-num">Phase {p.n}</div>
+            <div className="phase-name">{p.name}</div>
+            <div className="phase-desc">{p.desc}</div>
+            <div className="phase-status">
+              {p.status==="complete"?"✓ Complete":p.status==="in_progress"?"● In Progress":p.status==="blocked"?"⚠ Blocked":"○ Not Started"}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function DecisionsTab({ decisions, onResolve }) {
+  const tier1 = CONFIG.decisions.filter(d=>d.tier===1);
+  const tier2 = CONFIG.decisions.filter(d=>d.tier===2);
+  return (
+    <div className="fade-in">
+      <div style={{marginBottom:"24px"}}>
+        <div className="section-header"><div className="section-title">Decision Queue</div><div className="section-sub">Resolve Tier 1 first — they unblock everything else</div></div>
+        <p style={{fontSize:"14px",color:"#2a3848",lineHeight:"1.75",maxWidth:"620px"}}>These decisions must be resolved before development can proceed. Anyone can mark a decision resolved. Resolutions are saved to the shared database.</p>
+      </div>
+      <div style={{marginBottom:"8px",fontSize:"11px",letterSpacing:".22em",textTransform:"uppercase",color:"#c46060"}}>Tier 1 — Non-Negotiable</div>
+      <div className="decisions-list" style={{marginBottom:"32px"}}>{tier1.map(d=><DecisionCard key={d.id} decision={d} dbState={decisions[d.id]} onResolve={onResolve}/>)}</div>
+      <div style={{marginBottom:"8px",fontSize:"11px",letterSpacing:".22em",textTransform:"uppercase",color:"#5a9fd4"}}>Tier 2 — Important</div>
+      <div className="decisions-list">{tier2.map(d=><DecisionCard key={d.id} decision={d} dbState={decisions[d.id]} onResolve={onResolve}/>)}</div>
+    </div>
+  );
+}
+
+function DecisionCard({ decision, dbState, onResolve }) {
+  const [showForm, setShowForm] = useState(false);
+  const [resolvedBy, setResolvedBy] = useState("");
+  const [resolution, setResolution] = useState("");
+  const [saving, setSaving] = useState(false);
+  const isResolved = dbState?.status === "resolved";
+
+  async function handleResolve() {
+    if (!resolvedBy.trim() || !resolution.trim()) return;
+    setSaving(true);
+    await onResolve(decision.id, resolvedBy.trim(), resolution.trim());
+    setSaving(false);
+    setShowForm(false);
+  }
+
+  return (
+    <div className={`decision-card${isResolved?" resolved":""}`}>
+      <div className="decision-header">
+        <div className={`decision-tier ${decision.tier===1?"tier-1":"tier-2"}`}>{decision.tier===1?"Priority":"Important"}</div>
+        <div className="decision-title">{decision.title}</div>
+      </div>
+      <div className="decision-desc">{decision.desc}</div>
+      <div className="decision-options">{decision.options.map((o,i)=><div key={i} className="decision-option">{o}</div>)}</div>
+      <div className="decision-blocks"><span style={{marginRight:"8px",color:"#2a3848"}}>Blocks:</span>{decision.blocks.map(b=><span key={b}>{b}</span>)}</div>
+      {isResolved ? (
+        <div>
+          <div className="resolved-badge"><span>✓</span><span>Resolved by {dbState.resolved_by}</span></div>
+          <div className="resolved-note">{dbState.resolution}</div>
+        </div>
+      ) : (
+        <div>
+          <div style={{display:"flex",gap:"10px"}}>
+            <button className="resolve-btn" onClick={()=>setShowForm(!showForm)}>{showForm?"Cancel":"Mark as Resolved"}</button>
+          </div>
+          {showForm && (
+            <div className="resolve-form">
+              <label className="form-label">Your name</label>
+              <input className="form-input" placeholder="First name" value={resolvedBy} onChange={e=>setResolvedBy(e.target.value)}/>
+              <label className="form-label">What was decided?</label>
+              <textarea className="form-textarea" placeholder="Describe the decision reached..." value={resolution} onChange={e=>setResolution(e.target.value)}/>
+              <div className="form-row">
+                <button className="form-submit" onClick={handleResolve} disabled={saving||!resolvedBy.trim()||!resolution.trim()}>{saving?"Saving…":"Save Resolution"}</button>
+                <button className="form-cancel" onClick={()=>setShowForm(false)}>Cancel</button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function DocumentsTab() {
+  return (
+    <div className="fade-in">
+      <div style={{marginBottom:"24px"}}>
+        <div className="section-header"><div className="section-title">Project Documents</div><div className="section-sub">Planning and reference files</div></div>
+        <p style={{fontSize:"14px",color:"#2a3848",lineHeight:"1.7",maxWidth:"560px"}}>Update document URLs in the CONFIG object as documents are created and hosted.</p>
+      </div>
+      <div className="docs-grid">
+        {CONFIG.documents.map(d=>(
+          <div key={d.name} className="doc-card">
+            <div className="doc-name">{d.name}</div>
+            <div className="doc-desc">{d.desc}</div>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+              <div className={`doc-status ${d.status}`}>{d.status==="complete"?"✓ Complete":d.status==="in_progress"?"● In Progress":"○ Not Started"}</div>
+              {d.url!=="#"?<a className="doc-link" href={d.url} target="_blank" rel="noopener">Open →</a>:<span style={{fontSize:"11px",color:"#1a2430"}}>URL not set</span>}
+            </div>
+          </div>
+        ))}
+      </div>
+      <div style={{marginTop:"32px",padding:"20px 24px",background:"#0c1018",border:"1px solid #1a2430"}}>
+        <div style={{fontSize:"11px",letterSpacing:".22em",textTransform:"uppercase",color:"#5a9fd4",marginBottom:"10px"}}>To update document links</div>
+        <p style={{fontSize:"13px",color:"#2a3848",lineHeight:"1.8"}}>Edit the <code style={{background:"#080b0f",padding:"1px 6px",color:"#5a9fd4"}}>documents</code> array in the CONFIG object at the top of this HTML file. Replace <code style={{background:"#080b0f",padding:"1px 6px",color:"#5a9fd4"}}>"#"</code> with the actual URL for each document.</p>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>
