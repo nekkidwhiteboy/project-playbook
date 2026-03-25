@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/tmp/**)",
+      "Bash(unzip -q C:projectsproject-playbookbli-divorcedocsexistingOffer_Knowledge_Base_Uncontested_Divorce_Software.docx -d offer_extraction)",
+      "Bash(which unzip:*)",
+      "Bash(unzip -p \"C:/projects/project-playbook/bli-divorce/docs/existing/Offer_Knowledge_Base_Uncontested_Divorce_Software.docx\" word/document.xml | head -100)",
+      "Bash(unzip -p \"C:/projects/project-playbook/bli-divorce/docs/existing/Project Purpose.docx\" word/document.xml 2>&1 | head -50)",
+      "Bash(unzip -p \"C:/projects/project-playbook/bli-divorce/docs/existing/Why_People_Love_to_Work_With_Us.docx\" word/document.xml 2>&1 | head -50)"
+    ]
+  }
+}

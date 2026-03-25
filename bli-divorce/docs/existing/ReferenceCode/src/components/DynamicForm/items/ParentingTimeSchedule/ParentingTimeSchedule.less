@@ -1,0 +1,33 @@
+@import "~antd/dist/antd.less";
+
+.pts-item {
+    background-color: @component-background;
+    display: inline-block;
+    padding: 8px;
+    border-radius: @control-border-radius;
+
+    .party-color {
+        height: 15px;
+        width: 15px;
+        border: 1px solid black;
+        display: inline-block;
+        margin-right: 5px;
+    }
+    .pts-period {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+
+        .pts-exchange {
+            display: flex;
+            gap: 5px;
+
+            .ant-form-item {
+                margin: 0px;
+            }
+        }
+    }
+    .error-message {
+        color: @error-color;
+    }
+}

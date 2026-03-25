@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>unfunded.work</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#09080a;color:#e4e0ec;font-family:'DM Sans',sans-serif}
+body{display:flex;flex-direction:column;min-height:100vh}
+.header{padding:32px 40px;border-bottom:1px solid #1a1720}
+.wordmark{font-size:13px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:#6a5acd}
+.wordmark span{color:#5a5068}
+.main{flex:1;max-width:780px;width:100%;margin:0 auto;padding:64px 32px}
+.eyebrow{font-size:10px;letter-spacing:.32em;text-transform:uppercase;color:#7a7090;margin-bottom:20px}
+h1{font-size:clamp(28px,5vw,42px);font-weight:400;line-height:1.15;color:#f0ecf8;margin-bottom:14px}
+.sub{font-size:15px;color:#7a7090;line-height:1.8;margin-bottom:56px;max-width:520px}
+.projects-label{font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:#6a6080;margin-bottom:16px}
+.projects{display:flex;flex-direction:column;gap:12px}
+.project-card{display:flex;align-items:center;justify-content:space-between;padding:22px 28px;background:#0f0d14;border:1px solid #1a1720;text-decoration:none;transition:border-color .2s,background .2s}
+.project-card:hover{background:#131020;border-color:#6a5acd44}
+.project-left{display:flex;flex-direction:column;gap:5px}
+.project-name{font-size:16px;font-weight:500;color:#e4e0ec}
+.project-desc{font-size:13px;color:#7a7090;line-height:1.5}
+.project-right{display:flex;align-items:center;gap:16px;flex-shrink:0;margin-left:24px}
+.project-status{font-size:10px;letter-spacing:.18em;text-transform:uppercase;padding:4px 12px;flex-shrink:0}
+.status-active{background:#0d1220;border:1px solid #1e3060;color:#5a8acd}
+.arrow{font-size:18px;color:#5a5070;transition:color .2s;flex-shrink:0}
+.project-card:hover .arrow{color:#6a5acd}
+.coming-soon{padding:22px 28px;background:#09080a;border:1px solid #131018;border-style:dashed}
+.coming-soon-text{font-size:13px;color:#5a5070;font-style:italic}
+.footer{padding:28px 40px;border-top:1px solid #1a1720;display:flex;justify-content:space-between;align-items:center}
+.footer-text{font-size:11px;color:#5a5070;letter-spacing:.1em}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.main{animation:fadeUp .4s ease}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="wordmark">unfunded<span>.</span>work</div>
+</div>
+
+<div class="main">
+  <div class="eyebrow">Project Playbook</div>
+  <h1>Building things<br/>without permission.</h1>
+  <p class="sub">Active software projects in planning and development. Each link goes to a live project dashboard with phase tracking, open decisions, and partner updates.</p>
+
+  <div class="projects-label">Active Projects</div>
+  <div class="projects">
+
+    <a class="project-card" href="/vettedpros/dashboard/">
+      <div class="project-left">
+        <div class="project-name">VettedPros</div>
+        <div class="project-desc">Attorney directory + awards platform — the proving ground for Women of Distinction</div>
+      </div>
+      <div class="project-right">
+        <div class="project-status status-active">Active Build</div>
+        <div class="arrow">→</div>
+      </div>
+    </a>
+
+    <div class="coming-soon">
+      <div class="coming-soon-text">More projects coming — BLI Divorce Software, Women of Distinction, Mental Health App</div>
+    </div>
+
+  </div>
+</div>
+
+<div class="footer">
+  <div class="footer-text">unfunded.work — project playbook</div>
+  <div class="footer-text">Louisville, KY</div>
+</div>
+
+</body>
+</html>

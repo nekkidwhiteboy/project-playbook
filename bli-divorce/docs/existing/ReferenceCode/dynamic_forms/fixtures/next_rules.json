@@ -1,0 +1,284 @@
+[
+    {
+        "model": "dynamic_forms.nextrules",
+        "pk": 1,
+        "fields": {
+            "page": 2,
+            "rules": [],
+            "priority": 0,
+            "parent_page": 1
+        }
+    },
+    {
+        "model": "dynamic_forms.nextrules",
+        "pk": 2,
+        "fields": {
+            "page": 3,
+            "rules": [],
+            "priority": 0,
+            "parent_page": 2
+        }
+    },
+    {
+        "model": "dynamic_forms.nextrules",
+        "pk": 3,
+        "fields": {
+            "page": 4,
+            "rules": [],
+            "priority": 0,
+            "parent_page": 3
+        }
+    },
+    {
+        "model": "dynamic_forms.nextrules",
+        "pk": 4,
+        "fields": {
+            "page": 5,
+            "rules": [],
+            "priority": 0,
+            "parent_page": 4
+        }
+    },
+    {
+        "model": "dynamic_forms.nextrules",
+        "pk": 5,
+        "fields": {
+            "page": 6,
+            "rules": [],
+            "priority": 0,
+            "parent_page": 5
+        }
+    },
+    {
+        "model": "dynamic_forms.nextrules",
+        "pk": 6,
+        "fields": {
+            "page": 7,
+            "rules": [],
+            "priority": 0,
+            "parent_page": 6
+        }
+    },
+    {
+        "model": "dynamic_forms.nextrules",
+        "pk": 7,
+        "fields": {
+            "page": 8,
+            "rules": [],
+            "priority": 0,
+            "parent_page": 7
+        }
+    },
+    {
+        "model": "dynamic_forms.nextrules",
+        "pk": 8,
+        "fields": {
+            "page": 10,
+            "rules": [
+                "HaveMinorChildren == 'No'"
+            ],
+            "priority": 1,
+            "parent_page": 8
+        }
+    },
+    {
+        "model": "dynamic_forms.nextrules",
+        "pk": 9,
+        "fields": {
+            "page": 9,
+            "rules": [],
+            "priority": 0,
+            "parent_page": 8
+        }
+    },
+    {
+        "model": "dynamic_forms.nextrules",
+        "pk": 10,
+        "fields": {
+            "page": 10,
+            "rules": [],
+            "priority": 0,
+            "parent_page": 9
+        }
+    },
+    {
+        "model": "dynamic_forms.nextrules",
+        "pk": 11,
+        "fields": {
+            "page": 11,
+            "rules": [],
+            "priority": 0,
+            "parent_page": 10
+        }
+    },
+    {
+        "model": "dynamic_forms.nextrules",
+        "pk": 12,
+        "fields": {
+            "page": 12,
+            "rules": [],
+            "priority": 0,
+            "parent_page": 11
+        }
+    },
+    {
+        "model": "dynamic_forms.nextrules",
+        "pk": 13,
+        "fields": {
+            "page": 13,
+            "rules": [],
+            "priority": 0,
+            "parent_page": 12
+        }
+    },
+    {
+        "model": "dynamic_forms.nextrules",
+        "pk": 14,
+        "fields": {
+            "page": 14,
+            "rules": [],
+            "priority": 0,
+            "parent_page": 13
+        }
+    },
+    {
+        "model": "dynamic_forms.nextrules",
+        "pk": 15,
+        "fields": {
+            "page": 15,
+            "rules": [],
+            "priority": 0,
+            "parent_page": 14
+        }
+    },
+    {
+        "model": "dynamic_forms.nextrules",
+        "pk": 16,
+        "fields": {
+            "page": 16,
+            "rules": [],
+            "priority": 0,
+            "parent_page": 15
+        }
+    },
+    {
+        "model": "dynamic_forms.nextrules",
+        "pk": 17,
+        "fields": {
+            "page": 17,
+            "rules": [],
+            "priority": 0,
+            "parent_page": 16
+        }
+    },
+    {
+        "model": "dynamic_forms.nextrules",
+        "pk": 18,
+        "fields": {
+            "page": 18,
+            "rules": [],
+            "priority": 0,
+            "parent_page": 17
+        }
+    },
+    {
+        "model": "dynamic_forms.nextrules",
+        "pk": 19,
+        "fields": {
+            "page": 19,
+            "rules": [],
+            "priority": 0,
+            "parent_page": 18
+        }
+    },
+    {
+        "model": "dynamic_forms.nextrules",
+        "pk": 20,
+        "fields": {
+            "page": 20,
+            "rules": [],
+            "priority": 0,
+            "parent_page": 19
+        }
+    },
+    {
+        "model": "dynamic_forms.nextrules",
+        "pk": 21,
+        "fields": {
+            "page": 21,
+            "rules": [],
+            "priority": 0,
+            "parent_page": 20
+        }
+    },
+    {
+        "model": "dynamic_forms.nextrules",
+        "pk": 22,
+        "fields": {
+            "page": 22,
+            "rules": [],
+            "priority": 0,
+            "parent_page": 21
+        }
+    },
+    {
+        "model": "dynamic_forms.nextrules",
+        "pk": 23,
+        "fields": {
+            "page": null,
+            "rules": [],
+            "priority": 0,
+            "parent_page": 22
+        }
+    },
+    {
+        "model": "dynamic_forms.nextrules",
+        "pk": 24,
+        "fields": {
+            "page": 31,
+            "rules": [],
+            "priority": 0,
+            "parent_page": 30
+        }
+    },
+    {
+        "model": "dynamic_forms.nextrules",
+        "pk": 25,
+        "fields": {
+            "page": 32,
+            "rules": [],
+            "priority": 0,
+            "parent_page": 31
+        }
+    },
+    {
+        "model": "dynamic_forms.nextrules",
+        "pk": 26,
+        "fields": {
+            "page": 33,
+            "rules": [],
+            "priority": 0,
+            "parent_page": 32
+        }
+    },
+    {
+        "model": "dynamic_forms.nextrules",
+        "pk": 27,
+        "fields": {
+            "page": 34,
+            "rules": [],
+            "priority": 0,
+            "parent_page": 33
+        }
+    },
+    {
+        "model": "dynamic_forms.nextrules",
+        "pk": 28,
+        "fields": {
+            "page": null,
+            "rules": [],
+            "priority": 0,
+            "parent_page": 34
+        }
+    }
+]

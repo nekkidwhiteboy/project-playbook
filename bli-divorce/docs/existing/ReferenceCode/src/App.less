@@ -1,0 +1,28 @@
+@import "~antd/dist/antd.less";
+
+body {
+    background-image: url("./images/fatherdaughter-crop.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position-y: bottom;
+    background-position-x: center;
+    background-attachment: fixed;
+}
+
+.ant-layout.main-layout {
+    background: none;
+    & > main {
+        display: flex;
+        justify-content: center;
+    }
+}
+.main-content {
+    background-color: @component-background;
+    border-radius: 15px;
+    box-shadow: 0 1px 6px rgb(0 0 0 / 30%);
+    padding: 20px;
+    margin: 10px;
+    @media only screen and (max-width: 450px) {
+        margin: 10px 5px;
+    }
+}

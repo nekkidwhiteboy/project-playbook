@@ -1,0 +1,15 @@
+{
+  "short_name": "Barrow Brown Carrington",
+  "name": "Barrow Brown Carrington Client Portal",
+  "icons": [
+    {
+      "src": "favicon.png",
+      "sizes": "32x32",
+      "type": "image/x-png"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
+}

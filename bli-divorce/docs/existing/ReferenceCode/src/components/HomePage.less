@@ -1,0 +1,37 @@
+@import "~antd/dist/antd.less";
+
+.home-page {
+    background-color: @component-background;
+    border-radius: 15px;
+    box-shadow: 0 1px 6px rgb(0 0 0 / 30%);
+    padding: 20px;
+}
+
+.ant-popover-inner-content {
+    padding: 6px 8px !important;
+}
+.result-list {
+    .ant-list-item {
+        &:hover {
+            background-color: @item-hover-bg;
+        }
+        .result-item-label {
+            color: @link-color;
+            &:hover {
+                text-decoration: underline;
+                color: @link-hover-color;
+            }
+        }
+    }
+}
+.result-status-In_Progress,
+.result-status-Not_Started {
+    color: @warning-color;
+}
+.result-status-Complete {
+    color: @success-color;
+}
+.result-status-Failed,
+.result-status-Locked {
+    color: @error-color;
+}

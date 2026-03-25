@@ -1,0 +1,130 @@
+@import "~antd/dist/antd.less";
+
+.form-container {
+    padding: 10px;
+    margin: auto;
+    max-width: 800px;
+    width: 100%;
+
+    .input-row {
+        display: flex;
+        align-items: flex-end;
+        column-gap: 20px;
+        flex-wrap: wrap;
+        overflow-y: auto;
+        margin: 0px 20px;
+        @media only screen and (max-width: 450px) {
+            margin: auto 0px;
+        }
+        &:empty {
+            display: none;
+        }
+    }
+
+    .pre-form-container,
+    .post-form-container {
+        margin: 10px;
+    }
+
+    .ant-divider-horizontal {
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .ant-input-textarea-show-count.ant-input-textarea-in-form-item::after {
+        margin-bottom: 0px;
+    }
+}
+
+.ant-radio-group.vertical-group > label {
+    display: flex;
+    margin-bottom: 5px;
+    margin-left: 15px;
+    white-space: break-spaces;
+}
+
+.ant-cascader-menus .ant-cascader-menu {
+    height: initial;
+    max-height: 180px;
+}
+
+.ant-form.readonly {
+    .ant-form-item {
+        pointer-events: none;
+        .ant-form-item-tooltip {
+            pointer-events: all;
+        }
+    }
+
+    .ant-checkbox-disabled + span,
+    .ant-radio-disabled + span,
+    .PhoneInputInput[disabled],
+    .ant-select-disabled.ant-select:not(.ant-select-customize-input)
+        .ant-select-selector {
+        color: inherit;
+        background-color: @component-background;
+    }
+}
+
+.ant-form-item.label-above {
+    .ant-form-item-label {
+        line-height: 1.5715;
+        padding-bottom: 5px;
+        text-align: left;
+        white-space: normal;
+        text-wrap: pretty;
+    }
+}
+.ant-input-number-input-wrap {
+    margin-right: 11px;
+}
+
+article.ant-typography {
+    flex-grow: 1;
+
+    iframe {
+        margin-bottom: 1em !important;
+    }
+}
+
+/* Display required mark ::after the label, instead of ::before. */
+.ant-form-item.label-above .ant-form-item-label > label {
+    display: inline;
+}
+
+.ant-form-item-label {
+    &
+        > label.ant-form-item-required:not(
+            .ant-form-item-required-mark-optional
+        ) {
+        &::before {
+            display: none !important;
+        }
+
+        .required-mark {
+            color: @error-color;
+            font-family: SimSun, sans-serif;
+            font-size: 14px;
+            vertical-align: text-top;
+            padding-left: 2px;
+            user-select: none;
+            display: initial;
+        }
+    }
+    .required-mark {
+        display: none;
+    }
+}
+
+.ant-spin.centered {
+    display: table;
+    margin: auto;
+}
+.PhoneInputCountrySelect option {
+    background-color: @component-background;
+}
+.PhoneInputInput {
+    .ant-input();
+    .ant-form-item-has-error & {
+        border-color: @error-color;
+    }
+}

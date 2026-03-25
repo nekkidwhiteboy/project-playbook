@@ -1,0 +1,31 @@
+@import "~antd/dist/antd.less";
+
+.user-list {
+    background-color: @component-background;
+
+    .ant-list-item:hover {
+        cursor: pointer;
+        background-color: @item-hover-bg;
+    }
+    .user-list-header {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .user-invite-card {
+        .actions {
+            display: none;
+        }
+        &:hover .actions {
+            display: inherit;
+        }
+    }
+}
+
+.user-invite-form {
+    .initial-forms-list {
+        .ant-list-item-action {
+            margin-left: 8px;
+        }
+    }
+}

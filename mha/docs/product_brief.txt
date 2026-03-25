@@ -1,0 +1,119 @@
+# PRODUCT BRIEF: Mental Health Support App
+
+---
+
+## 1. APP CONCEPT SUMMARY
+
+This is a **structured, real-time mental health support app** designed to bridge the critical gap between therapeutic insight and real-world application. Rather than another passive wellness or tracking tool, the app provides **guided, interactive support** that helps users move from "I understand why I feel this way" to "I know exactly what to do about it right now."
+
+The core innovation is a repeatable **Identify → Process → Resolution flow** paired with a proprietary **BALV emotional needs mapping engine** (Belonging, Acceptance, Love, Validation). The app guides users through understanding their surface emotions, breaks down contributing thoughts/triggers in a branching format, maps those to unmet emotional needs, and surfaces personalized, actionable interventions—all in real time, when distress is happening.
+
+The app is grounded in evidence-based clinical frameworks (CBT, ACT, Compassion-Focused Therapy, DBT skills) but delivers them through an approachable, guided experience rather than clinical language or overwhelming choice. It works **both independently** (for users without therapy access) **and as a complement to ongoing care** (reinforcing skills between sessions). The experience prioritizes simplicity, actionability, and a supportive tone—designed to meet users where they are, when they need it most.
+
+---
+
+## 2. IDEAL USER AVATAR
+
+**Name:** Emily  
+**Age:** 22  
+**Context:** College student or early-career professional; likely juggling school/work, relationships, and figuring out identity
+
+### Demographics & Lifestyle
+- High-functioning, responsible, appears "put together" to others
+- Busy daily schedule; constant mental load
+- Digitally native; comfortable with mobile-first tools
+- May or may not be in therapy; open to mental health support and growth
+
+### Core Struggles
+- **Persistent low-level anxiety:** Constant undercurrent of worry throughout the day; overthinking conversations and social interactions; worry about how she's perceived
+- **Social anxiety patterns:** Fears saying the wrong thing or being "not enough"; oscillates between over-preparing and avoiding; social situations feel draining
+- **Internal critic:** Racing thoughts, self-doubt, second-guessing decisions; difficulty with relaxation and sleep due to rumination
+- **Insight without action:** Understands her patterns intellectually, even in therapy, but doesn't know how to apply tools in real-life moments of distress
+- **Validation dependency:** Relies heavily on external reassurance; struggles with internal validation and self-trust
+- **Feeling stuck:** Despite awareness and effort, feels like she's not making meaningful progress; reliance on others for support rather than building internal resilience
+
+### What She's Already Tried
+- **Therapy:** Helpful for awareness and discussion; leaves sessions feeling understood but struggles to implement skills when anxious in real situations
+- **Mental health apps:** Mood trackers (Daylio) feel passive; journaling apps don't tell her what to do with the information; general wellness apps (Calm, Headspace) are nice for relaxation but don't address real-time thought patterns or decision-making
+- **Self-help content:** Books, podcasts, social media resonate momentarily but lack structure; temporary insight without consistency or follow-through
+- **General coping:** Often pushes through anxiety rather than working with it; seeks reassurance from others rather than building confidence internally
+
+### What She Needs
+- **Real-time guidance:** Structured, step-by-step support exactly when she's anxious or overwhelmed, not hours or days later
+- **Bridge between insight and action:** Help translating what she understands intellectually into concrete, manageable steps
+- **Clarity in the moment:** A way to break down confusing emotions quickly without feeling more overwhelmed
+- **Non-judgmental support:** Tools that feel human and supportive, not clinical or robotic
+- **Personalization without choice fatigue:** Smart recommendations that fit her situation, not endless options to decide between
+- **Progress toward autonomy:** Building skills and confidence so she's less dependent on external reassurance and app usage over time
+
+### Success Looks Like (90 days)
+- Anxiety doesn't disappear, but her relationship with it changes
+- When anxious (e.g., before social events), she can identify what's happening, break it down, and use a specific tool—reducing spiral time from hours to minutes
+- She builds pattern awareness: "This is a validation/judgment issue again" and can create distance from the thought instead of believing it fully
+- Small behavioral shifts: less self-doubt in conversations, more willingness to show up despite anxiety, faster recovery
+- Confidence grows not from things going perfectly, but from knowing she can handle how she feels
+- Shifts from external reassurance-seeking to building internal validation
+- Uses the app a few times a week during stable periods; more often during stress; doesn't feel obligated or guilty when not using it
+
+---
+
+## 3. MVP FEATURE SET
+
+**Launch must include only features that directly solve the core problem:** helping users move from insight to action in real time. Everything below is essential; features beyond this scope are deferred to v2.
+
+### 3.1 Guided Identify → Process → Resolution Flow
+**THE FOUNDATION. Everything else depends on this working well.**
+
+**Identify Phase:**
+- User opens the app and encounters a gentle check-in: "What are you feeling right now?"
+- Emotion selection: pre-populated list (anxiety, overwhelm, sadness, frustration, loneliness, anger, shame, etc.) + ability to enter custom emotion
+- Quick, low-friction entry; no long onboarding; user can start immediately
+
+**Process Phase (Interactive Mapping):**
+- Once emotion is selected, the app branches with guided questions to help user understand what's driving it
+- Examples of branching logic:
+  - *Anxiety* → "What seems to be triggering this? (social situation / performance / uncertainty / judgment / something else?)"
+  - *Social anxiety* → "What's the specific worry? (saying something wrong / being judged / not being interesting enough / etc.)"
+  - *Judgment worry* → "What do you imagine people are thinking? / What would that mean about you?"
+- **Key design principle:** Questions guide user deeper, not just collecting data; user selects from options or enters brief input
+- Branching continues until root thought/trigger is surfaced (usually 3-5 levels deep)
+- **Visual/structural option:** Branching can be displayed as a map, list, or tree format—whichever feels most intuitive
+
+**Resolution Phase:**
+- App recommends a primary intervention + 2-3 alternatives based on what emerged
+- Primary recommendation is the "best next step" based on Identify → Process mapping + BALV analysis (see 3.3)
+- Options include:
+  - Guided thought reframing (CBT-based)
+  - Grounding/regulation exercise
+  - Confidence/validation prompt
+  - Small action step (e.g., "text one person about plans")
+  - Self-compassion reflection
+- User selects one and engages; app guides them through it step-by-step
+- **Tone:** Conversational, supportive, calm; clear but concise language; no lengthy explanations
+
+**Completion:**
+- After intervention, brief reflection: "How does that feel now?" or "What's one small thing you can do today?"
+- User exits with clarity, regulation, and a next step—not just insight
+
+---
+
+### 3.2 Branching Process Feature (Interactive Mapping / Guided Brainstorming)
+**Replaces traditional open-ended journaling with structured, visual breakdown.**
+
+- Instead of "write about what you're feeling," the app uses the branching format described in 3.1 as the core method
+- As user inputs responses, the app builds a visual/hierarchical map of thoughts → triggers → root beliefs
+- User can see the pathway they've traced: "I'm anxious → worried about the meeting → fear I'll say something wrong → belief that mistakes mean I'm incompetent"
+- Branching stops at natural "resolution point" where the user has clarity on the core fear/need
+- **Data use:** These inputs are captured for backend BALV analysis (see 3.3) and pattern recognition (see 3.7)
+- **Design goal:** Feels like guided brainstorming/mapping, not data collection; user feels heard and understood, not interrogated
+
+---
+
+### 3.3 BALV Mapping Engine (Behind-the-Scenes + Insight Output)
+**The differentiation layer. Maps user responses to core emotional needs; informs personalization and insight.**
+
+**Behind-the-Scenes Mapping:**
+- As user inputs responses during Process phase, backend system tags inputs against BALV categories:
+  - **Belonging:** Isolation, disconnection, fear of exclusion, social anxiety, not fitting in
+  - **Acceptance:** Fear of judgment, feeling wrong/flawed, not being "enough," perfectionism
+  - **Love:** Self-criticism,

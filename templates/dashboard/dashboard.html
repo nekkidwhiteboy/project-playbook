@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Project Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+/* ── RESET & BASE ────────────────────────────────────────────────────────── */
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#09080a;--bg2:#100f12;--bg3:#171520;
+  --border:#211e28;--border2:#2d2938;
+  --gold:#c9a96e;--gold2:#e8c98a;--gold-dim:#8a6e3e;
+  --text:#e2dce8;--text2:#9990aa;--text3:#5a5468;
+  --green:#4a8c5c;--green-bg:#0d1f14;--green-border:#1e4030;
+  --amber:#c9a96e;--amber-bg:#1e1608;--amber-border:#3d2e10;
+  --red:#9c4a4a;--red-bg:#1e0d0d;--red-border:#3d1818;
+  --gray-bg:#13111a;--gray-border:#211e28;
+  --blue:#4a6c9c;--blue-bg:#0d1220;--blue-border:#1e2e50;
+}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;line-height:1.6}
+/* ── LAYOUT ─────────────────────────────────────────────────────────────── */
+.app{min-height:100vh;display:flex;flex-direction:column}
+.topbar{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 32px;display:flex;align-items:center;gap:0;height:56px;flex-shrink:0;position:sticky;top:0;z-index:50}
+.topbar-logo{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:400;color:var(--gold);letter-spacing:.02em;margin-right:auto}
+.topbar-meta{font-size:11px;color:var(--text3);letter-spacing:.15em;text-transform:uppercase;margin-right:24px}
+.tabs{display:flex;height:100%;margin-left:32px}
+.tab{display:flex;align-items:center;padding:0 20px;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap}
+.tab:hover{color:var(--text2)}
+.tab.active{color:var(--gold);border-bottom-color:var(--gold)}
+.content{flex:1;overflow-y:auto;padding:32px}
+.inner{max-width:1100px;margin:0 auto}
+/* ── OVERVIEW TAB ───────────────────────────────────────────────────────── */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px}
+.stat-card{background:var(--bg2);border:1px solid var(--border);padding:20px 24px}
+.stat-label{font-size:9px;letter-spacing:.28em;text-transform:uppercase;color:var(--text3);margin-bottom:8px}
+.stat-value{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:300;color:var(--text);line-height:1}
+.stat-sub{font-size:11px;color:var(--text3);margin-top:4px}
+.stat-value.gold{color:var(--gold)}
+.stat-value.green{color:var(--green)}
+.stat-value.red{color:var(--red)}
+.section-header{display:flex;align-items:baseline;gap:12px;margin-bottom:16px}
+.section-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:400;color:var(--text)}
+.section-sub{font-size:11px;color:var(--text3);letter-spacing:.1em}
+.phase-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:32px}
+.phase-card{padding:14px 16px;border:1px solid var(--gray-border);background:var(--gray-bg);cursor:default;transition:border-color .2s}
+.phase-card.complete{background:var(--green-bg);border-color:var(--green-border)}
+.phase-card.in_progress{background:var(--amber-bg);border-color:var(--amber-border)}
+.phase-card.blocked{background:var(--red-bg);border-color:var(--red-border)}
+.phase-card.not_started{background:var(--gray-bg);border-color:var(--gray-border)}
+.phase-num{font-size:9px;letter-spacing:.2em;color:var(--text3);margin-bottom:4px}
+.phase-name{font-size:13px;font-weight:500;color:var(--text);margin-bottom:4px}
+.phase-desc{font-size:11px;color:var(--text3);line-height:1.5}
+.phase-status{display:inline-block;font-size:9px;letter-spacing:.15em;text-transform:uppercase;padding:2px 8px;margin-top:8px}
+.phase-card.complete .phase-status{background:var(--green-bg);border:1px solid var(--green-border);color:var(--green)}
+.phase-card.in_progress .phase-status{background:var(--amber-bg);border:1px solid var(--amber-border);color:var(--gold)}
+.phase-card.blocked .phase-status{background:var(--red-bg);border:1px solid var(--red-border);color:var(--red)}
+.phase-card.not_started .phase-status{background:var(--gray-bg);border:1px solid var(--gray-border);color:var(--text3)}
+.blockers-panel{background:var(--red-bg);border:1px solid var(--red-border);padding:20px 24px;margin-bottom:32px}
+.blockers-title{font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:var(--red);margin-bottom:12px}
+.blocker-item{display:flex;gap:12px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--red-border)}
+.blocker-item:last-child{border-bottom:none}
+.blocker-decision{font-size:12px;font-weight:500;color:var(--text);flex:1}
+.blocker-blocks{font-size:11px;color:var(--text3)}
+/* ── DECISIONS TAB ──────────────────────────────────────────────────────── */
+.decisions-list{display:flex;flex-direction:column;gap:16px}
+.decision-card{background:var(--bg2);border:1px solid var(--border);padding:24px}
+.decision-card.resolved{opacity:.65;border-color:var(--green-border)}
+.decision-header{display:flex;align-items:flex-start;gap:12px;margin-bottom:12px}
+.decision-tier{font-size:9px;letter-spacing:.2em;text-transform:uppercase;padding:3px 10px;flex-shrink:0;margin-top:2px}
+.tier-1{background:var(--red-bg);border:1px solid var(--red-border);color:var(--red)}
+.tier-2{background:var(--amber-bg);border:1px solid var(--amber-border);color:var(--gold)}
+.decision-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:400;color:var(--text);flex:1}
+.decision-desc{font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:14px}
+.decision-options{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.decision-option{font-size:12px;color:var(--text3);padding:8px 12px;background:var(--bg3);border-left:2px solid var(--border2)}
+.decision-blocks{font-size:11px;color:var(--text3);margin-bottom:16px}
+.decision-blocks span{display:inline-block;background:var(--bg3);border:1px solid var(--border);padding:2px 8px;margin-right:6px;margin-bottom:4px}
+.decision-actions{display:flex;gap:10px;align-items:center}
+.resolve-btn{background:var(--gold);color:#09080a;border:none;padding:8px 20px;font-size:10px;letter-spacing:.2em;text-transform:uppercase;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer;transition:opacity .2s}
+.resolve-btn:hover{opacity:.85}
+.resolved-badge{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--green)}
+.resolved-by{font-size:11px;color:var(--text3)}
+.resolved-note{font-size:13px;color:var(--text2);font-style:italic;margin-top:10px;padding:10px 14px;background:var(--green-bg);border-left:2px solid var(--green-border)}
+/* Resolve form */
+.resolve-form{margin-top:16px;padding:16px;background:var(--bg3);border:1px solid var(--border2)}
+.form-label{font-size:9px;letter-spacing:.25em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;display:block}
+.form-input{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:10px 12px;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;margin-bottom:12px;transition:border-color .2s}
+.form-input:focus{border-color:var(--gold-dim)}
+.form-textarea{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:10px 12px;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;margin-bottom:12px;resize:vertical;min-height:80px;transition:border-color .2s}
+.form-textarea:focus{border-color:var(--gold-dim)}
+.form-row{display:flex;gap:10px}
+.form-submit{background:var(--gold);color:#09080a;border:none;padding:9px 22px;font-size:10px;letter-spacing:.2em;text-transform:uppercase;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer}
+.form-cancel{background:transparent;color:var(--text3);border:1px solid var(--border);padding:9px 18px;font-size:10px;letter-spacing:.2em;text-transform:uppercase;font-family:'DM Sans',sans-serif;cursor:pointer}
+/* ── INTERVIEW TAB ──────────────────────────────────────────────────────── */
+.interview-wrap{background:var(--bg2);border:1px solid var(--border);padding:0;display:flex;flex-direction:column;height:calc(100vh - 160px)}
+.interview-header{padding:16px 24px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.interview-title{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold)}
+.interview-status{font-size:11px;color:var(--text3)}
+.interview-body{flex:1;display:flex;flex-direction:column;overflow:hidden;padding:0 24px}
+.landing-inner{padding:32px 0;max-width:520px}
+.int-eyebrow{font-size:9px;letter-spacing:.35em;text-transform:uppercase;color:var(--gold);margin-bottom:12px}
+.int-title{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:400;color:var(--text);margin-bottom:10px;line-height:1.2}
+.int-sub{font-size:13px;color:var(--text3);line-height:1.8;margin-bottom:28px}
+.completed-chips{margin-bottom:24px}
+.chip{display:inline-block;background:var(--green-bg);border:1px solid var(--green-border);padding:3px 11px;font-size:11px;color:var(--green);margin-right:6px;margin-bottom:6px}
+.int-card{background:var(--bg3);border:1px solid var(--border2);padding:24px}
+.int-lbl{font-size:9px;letter-spacing:.25em;text-transform:uppercase;color:var(--gold);margin-bottom:8px;display:block}
+.int-input{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:12px 14px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s}
+.int-input:focus{border-color:var(--gold-dim)}
+.int-btn{background:var(--gold);color:#09080a;border:none;padding:12px 28px;font-size:10px;letter-spacing:.2em;text-transform:uppercase;font-family:'DM Sans',sans-serif;font-weight:700;cursor:pointer;margin-top:12px;width:100%;transition:opacity .2s}
+.int-btn:hover{opacity:.85}
+.int-btn:disabled{background:var(--border2);color:var(--text3);cursor:default;opacity:1}
+/* Chat */
+.chat-wrap{flex:1;overflow-y:auto;padding:20px 0;display:flex;flex-direction:column;gap:12px;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+.bubble-ai{max-width:86%;padding:13px 17px;font-size:14px;line-height:1.75;font-family:'Cormorant Garamond',serif;font-size:16px;align-self:flex-start;background:var(--bg3);border:1px solid var(--border);color:var(--text)}
+.bubble-user{max-width:86%;padding:13px 17px;font-size:14px;line-height:1.75;font-family:'DM Sans',sans-serif;align-self:flex-end;background:var(--amber-bg);border:1px solid var(--amber-border);color:#c9b890}
+.send-row{display:flex;gap:10px;border-top:1px solid var(--border);padding:16px 0;flex-shrink:0}
+.send-input{flex:1;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:11px 14px;font-size:14px;font-family:'DM Sans',sans-serif;outline:none}
+.send-input:focus{border-color:var(--gold-dim)}
+.send-btn{background:var(--gold);color:#09080a;border:none;padding:0 22px;font-size:11px;font-family:'DM Sans',sans-serif;font-weight:700;cursor:pointer;flex-shrink:0}
+.send-btn:disabled{background:var(--border2);color:var(--text3);cursor:default}
+/* Complete screen */
+.complete-inner{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:48px 0;flex:1}
+.star{font-size:40px;color:var(--gold);margin-bottom:20px}
+/* Typing dots */
+@keyframes pulse{0%,100%{opacity:.2}50%{opacity:1}}
+.dot{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--gold);margin:0 2px;animation:pulse 1.4s ease-in-out infinite}
+/* ── DOCUMENTS TAB ──────────────────────────────────────────────────────── */
+.docs-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.doc-card{background:var(--bg2);border:1px solid var(--border);padding:22px;display:flex;flex-direction:column;gap:10px;transition:border-color .2s}
+.doc-card:hover{border-color:var(--gold-dim)}
+.doc-name{font-size:15px;font-weight:500;color:var(--text)}
+.doc-desc{font-size:12px;color:var(--text3);line-height:1.6;flex:1}
+.doc-status{display:inline-block;font-size:9px;letter-spacing:.18em;text-transform:uppercase;padding:2px 8px}
+.doc-status.complete{background:var(--green-bg);border:1px solid var(--green-border);color:var(--green)}
+.doc-status.in_progress{background:var(--amber-bg);border:1px solid var(--amber-border);color:var(--gold)}
+.doc-status.ready{background:var(--blue-bg);border:1px solid var(--blue-border);color:var(--blue)}
+.doc-link{font-size:11px;color:var(--gold);text-decoration:none;letter-spacing:.1em;text-transform:uppercase}
+.doc-link:hover{text-decoration:underline}
+/* ── SHARED ─────────────────────────────────────────────────────────────── */
+.notice{background:var(--bg3);border:1px solid var(--amber-border);padding:12px 16px;font-size:12px;color:var(--text3);line-height:1.6;margin-bottom:20px}
+.error-notice{background:var(--red-bg);border:1px solid var(--red-border);padding:12px 16px;font-size:12px;color:var(--red);line-height:1.6;margin-bottom:20px}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.fade-in{animation:fadeUp .3s ease}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect, useRef, useCallback } = React;
+
+// ══════════════════════════════════════════════════════════════════════════
+// ── PROJECT CONFIG — Edit this section for each new project ──────────────
+// ══════════════════════════════════════════════════════════════════════════
+const CONFIG = {
+  project: {
+    name: "Women of Distinction",
+    tagline: "Honoring professional women through awards, directory, and content",
+    version: "0.1.0",
+  },
+
+  supabase: {
+    url: "https://pphtrmtulehfpvrbmsxs.supabase.co",
+    key: "sb_publishable_OfnlB4cIyfhH0LCHOAsojA_2p_SaM_S",
+  },
+
+  anthropic: {
+    key: "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",
+  },
+
+  phases: [
+    { id:"phase-1",  n:1,  name:"Discovery",             desc:"Purpose, features, audience, monetization, constraints",    status:"in_progress" },
+    { id:"phase-2",  n:2,  name:"Design Vision",          desc:"Aesthetic direction, component inventory, design system",   status:"not_started" },
+    { id:"phase-3",  n:3,  name:"Competitive Research",   desc:"Market research and competitor analysis",                   status:"not_started" },
+    { id:"phase-4",  n:4,  name:"Tech Stack",             desc:"Stack decision, deployment plan, testing strategy",         status:"complete"    },
+    { id:"phase-5",  n:5,  name:"Data Architecture",      desc:"Entity mapping, data model document",                       status:"not_started" },
+    { id:"phase-6",  n:6,  name:"Integration Mapping",    desc:"Third-party service map — all integrations documented",     status:"complete"    },
+    { id:"phase-7",  n:7,  name:"Project Scaffolding",    desc:"Folder structure, naming conventions, coding standards",    status:"in_progress" },
+    { id:"phase-8",  n:8,  name:"CLAUDE.md Setup",        desc:"Permissions, work habits, GitHub sync, context rules",      status:"in_progress" },
+    { id:"phase-9",  n:9,  name:"SEO & Content Arch.",    desc:"URL structure, metadata strategy, structured data",         status:"not_started" },
+    { id:"phase-10", n:10, name:"Implementation Guide",   desc:"Human-readable project overview and rationale doc",         status:"not_started" },
+    { id:"phase-11", n:11, name:"Feature Roadmap",        desc:"Dependency-mapped feature list for Claude Code",            status:"not_started" },
+    { id:"phase-12", n:12, name:"Sub-Agent Strategy",     desc:"Parallelization decisions — what can be built concurrently",status:"not_started" },
+    { id:"phase-13", n:13, name:"Feature Guides",         desc:"Detailed implementation guide per major feature",           status:"not_started" },
+    { id:"phase-14", n:14, name:"Session TODO System",    desc:"Rolling task list Claude Code reads at session start",      status:"not_started" },
+    { id:"phase-15", n:15, name:"Legal & Compliance",     desc:"Privacy, payments, data retention checklist",               status:"not_started" },
+  ],
+
+  decisions: [
+    {
+      id: "decision-1",
+      tier: 1,
+      title: "Selectivity vs. Reach",
+      desc: "Is selectivity the product, or is reach the product? This is the master decision — every other conflict in the project flows from it.",
+      options: [
+        "A — Pure Selectivity: One credibility standard. All members go through full vetting. No basic tier.",
+        "B — Dual Track: Vetted premium awards tier + separate purchasable basic directory listing.",
+      ],
+      blocks: ["Pricing Architecture","Member Acquisition","Brand Positioning","Vetting Workflow"],
+    },
+    {
+      id: "decision-2",
+      tier: 1,
+      title: "Year 1 Revenue Target",
+      desc: "Partner projections range from ~$500K to $50M+. A realistic, agreed-upon target with supporting member acquisition numbers must be established before any operational planning proceeds.",
+      options: [
+        "Conservative phased growth — realistic member count, proven playbook first",
+        "Aggressive growth — large member acquisition targets, significant capital investment",
+      ],
+      blocks: ["Team Size","Capital Requirements","Success Metrics","Marketing Budget"],
+    },
+    {
+      id: "decision-3",
+      tier: 1,
+      title: "Pricing Architecture",
+      desc: "What does a member actually pay? This decision depends on Decision 1. Annual tiers only enforce exclusivity; a monthly basic tier opens the door to volume but risks diluting prestige.",
+      options: [
+        "A — Annual tiers only: $495 / $795 / $1,195 founding rates (locked for life)",
+        "B — Dual track: $29–39/month basic listing + $495/$795/$1,195 premium annual tiers",
+      ],
+      blocks: ["Stripe Integration","Membership Flow","Revenue Model","Founding Member Campaign"],
+    },
+    {
+      id: "decision-4",
+      tier: 2,
+      title: "Launch Geography",
+      desc: "Build real regional credibility first, or launch with national brand presence and concentrate operations in 2–3 states?",
+      options: [
+        "A — Regional First: 2–3 states, build credibility, expand with proven playbook",
+        "B — National Brand, Regional Ops: National branding day one, focused outreach in 2–3 states",
+      ],
+      blocks: ["Marketing Strategy","SEO Architecture","Domain & Branding"],
+    },
+    {
+      id: "decision-5",
+      tier: 2,
+      title: "Award Experience",
+      desc: "Is the premium physical unboxing moment foundational to the brand and built into all vetted tier pricing, or an optional add-on purchase?",
+      options: [
+        "A — Foundational: Premium physical award included in all vetted tiers; built into pricing",
+        "B — Optional: Physical award is an add-on. Base membership is digital.",
+      ],
+      blocks: ["COGS & Pricing","Fulfillment Operations","Brand Positioning"],
+    },
+  ],
+
+  documents: [
+    { name:"Discovery Document",    desc:"Project purpose, audience, features, monetization, constraints",   status:"in_progress", url:"#" },
+    { name:"Decision Brief",        desc:"5 partner decisions required before development begins",            status:"ready",       url:"#" },
+    { name:"Tech Stack (v1.1)",     desc:"Full technical architecture, build order, code conventions",        status:"complete",    url:"#" },
+    { name:"Compilation Report",    desc:"AI analysis of all three stakeholder interviews",                   status:"complete",    url:"#" },
+    { name:"Stakeholder Interviews",desc:"Raw interview transcripts from all three partners",                 status:"complete",    url:"#" },
+    { name:"CONVENTIONS.md",        desc:"Coding standards and naming conventions for Claude Code",           status:"not_started", url:"#" },
+  ],
+
+  interview: {
+    coreQuestions: [
+      "What does success look like for this project in 2 years — describe it as specifically as you can.",
+      "Which professions or industries should we target first at launch, and why those?",
+      "How should we think about pricing — for directory listings, award packages, and subscription tiers?",
+      "How would you describe the brand personality and aesthetic? What feeling should it evoke?",
+      "What are the absolute must-have features for launch, and what can wait for phase 2?",
+      "Should we launch nationally or focus on a specific geographic market first?",
+      "What do you see as the biggest risk or challenge facing this project?",
+      "What role do you see yourself playing as this grows — where do your strengths add most value?",
+      "Is there anything you feel strongly should NOT be part of this project?",
+      "What's one thing about this project that excites you most?",
+    ],
+  },
+};
+// ══════════════════════════════════════════════════════════════════════════
+// END CONFIG
+// ══════════════════════════════════════════════════════════════════════════
+
+// ── SUPABASE CLIENT ───────────────────────────────────────────────────────
+const sb = supabase.createClient(CONFIG.supabase.url, CONFIG.supabase.key);
+
+// ── SUPABASE HELPERS ──────────────────────────────────────────────────────
+async function dbLoadDecisions() {
+  const { data, error } = await sb
+    .from("project_decisions")
+    .select("*")
+    .eq("project_name", CONFIG.project.name);
+  if (error) throw error;
+  return data || [];
+}
+
+async function dbSeedDecisions() {
+  const rows = CONFIG.decisions.map(d => ({
+    id: d.id,
+    project_name: CONFIG.project.name,
+    status: "open",
+    resolution: null,
+    resolved_by: null,
+    resolved_at: null,
+  }));
+  const { error } = await sb.from("project_decisions").upsert(rows, { onConflict: "id", ignoreDuplicates: true });
+  if (error) throw error;
+}
+
+async function dbResolveDecision(id, resolvedBy, resolution) {
+  const { error } = await sb
+    .from("project_decisions")
+    .update({ status: "resolved", resolution, resolved_by: resolvedBy, resolved_at: new Date().toISOString() })
+    .eq("id", id);
+  if (error) throw error;
+}
+
+async function dbGetCompletedInterviews() {
+  const { data, error } = await sb.from("interviews").select("name");
+  if (error) return [];
+  return [...new Set((data || []).map(r => r.name))];
+}
+
+async function dbSaveInterview(name, messages) {
+  const { error } = await sb.from("interviews").insert({ name, messages });
+  if (error) throw error;
+}
+
+// ── MAIN APP ──────────────────────────────────────────────────────────────
+function App() {
+  const [tab, setTab]                   = useState("overview");
+  const [decisions, setDecisions]       = useState({});
+  const [interviews, setInterviews]     = useState([]);
+  const [loading, setLoading]           = useState(true);
+  const [dbError, setDbError]           = useState("");
+
+  useEffect(() => { init(); }, []);
+
+  async function init() {
+    setLoading(true);
+    try {
+      await dbSeedDecisions();
+      const rows = await dbLoadDecisions();
+      const map = {};
+      rows.forEach(r => { map[r.id] = r; });
+      setDecisions(map);
+      const names = await dbGetCompletedInterviews();
+      setInterviews(names);
+    } catch (e) {
+      setDbError("Database connection failed. Check your Supabase configuration.");
+    }
+    setLoading(false);
+  }
+
+  async function resolveDecision(id, resolvedBy, resolution) {
+    await dbResolveDecision(id, resolvedBy, resolution);
+    setDecisions(prev => ({
+      ...prev,
+      [id]: { ...prev[id], status: "resolved", resolution, resolved_by: resolvedBy }
+    }));
+  }
+
+  const completedPhases  = CONFIG.phases.filter(p => p.status === "complete").length;
+  const inProgressPhases = CONFIG.phases.filter(p => p.status === "in_progress").length;
+  const openDecisions    = CONFIG.decisions.filter(d => !decisions[d.id] || decisions[d.id]?.status === "open").length;
+
+  const TABS = [
+    { id:"overview",   label:"Overview"   },
+    { id:"decisions",  label:`Decisions${openDecisions > 0 ? ` (${openDecisions})` : ""}` },
+    { id:"interview",  label:"Interview"  },
+    { id:"documents",  label:"Documents"  },
+  ];
+
+  return (
+    <div className="app">
+      {/* ── TOPBAR ── */}
+      <div className="topbar">
+        <div className="topbar-logo">{CONFIG.project.name}</div>
+        <div className="topbar-meta">v{CONFIG.project.version}</div>
+        <div className="tabs">
+          {TABS.map(t => (
+            <div key={t.id} className={`tab${tab===t.id?" active":""}`} onClick={()=>setTab(t.id)}>
+              {t.label}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ── CONTENT ── */}
+      <div className="content">
+        <div className="inner">
+          {dbError && <div className="error-notice">{dbError}</div>}
+          {loading && <div className="notice">Connecting to database…</div>}
+
+          {!loading && tab === "overview" && (
+            <OverviewTab
+              decisions={decisions}
+              interviews={interviews}
+              completedPhases={completedPhases}
+              inProgressPhases={inProgressPhases}
+              openDecisions={openDecisions}
+            />
+          )}
+          {!loading && tab === "decisions" && (
+            <DecisionsTab
+              decisions={decisions}
+              onResolve={resolveDecision}
+            />
+          )}
+          {tab === "interview" && (
+            <InterviewTab
+              interviews={interviews}
+              onInterviewComplete={(name) => setInterviews(prev => [...new Set([...prev, name])])}
+            />
+          )}
+          {tab === "documents" && <DocumentsTab/>}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── OVERVIEW TAB ──────────────────────────────────────────────────────────
+function OverviewTab({ decisions, interviews, completedPhases, inProgressPhases, openDecisions }) {
+  const openDecisionsList = CONFIG.decisions.filter(d => !decisions[d.id] || decisions[d.id]?.status === "open");
+
+  return (
+    <div className="fade-in">
+      {/* Stats */}
+      <div className="stats-row">
+        <div className="stat-card">
+          <div className="stat-label">Phases Complete</div>
+          <div className={`stat-value${completedPhases > 0 ? " green" : ""}`}>{completedPhases}</div>
+          <div className="stat-sub">of {CONFIG.phases.length} total phases</div>
+        </div>
+        <div className="stat-card">
+          <div className="stat-label">In Progress</div>
+          <div className={`stat-value${inProgressPhases > 0 ? " gold" : ""}`}>{inProgressPhases}</div>
+          <div className="stat-sub">phases currently active</div>
+        </div>
+        <div className="stat-card">
+          <div className="stat-label">Open Decisions</div>
+          <div className={`stat-value${openDecisions > 0 ? " red" : " green"}`}>{openDecisions}</div>
+          <div className="stat-sub">{openDecisions > 0 ? "blocking progress" : "all resolved"}</div>
+        </div>
+        <div className="stat-card">
+          <div className="stat-label">Interviews Done</div>
+          <div className="stat-value gold">{interviews.length}</div>
+          <div className="stat-sub">of {CONFIG.decisions.length > 0 ? "3" : "?"} partners</div>
+        </div>
+      </div>
+
+      {/* Blockers */}
+      {openDecisionsList.length > 0 && (
+        <div style={{marginBottom:"32px"}}>
+          <div className="section-header">
+            <div className="section-title">Blocking Decisions</div>
+            <div className="section-sub">Resolve these before build can continue</div>
+          </div>
+          <div className="blockers-panel">
+            <div className="blockers-title">⚠ Open decisions blocking progress</div>
+            {openDecisionsList.map(d => (
+              <div key={d.id} className="blocker-item">
+                <div style={{flex:1}}>
+                  <div className="blocker-decision">{d.title}</div>
+                  <div className="blocker-blocks">Blocks: {d.blocks.join(" · ")}</div>
+                </div>
+                <div style={{fontSize:"9px",color:"var(--red)",letterSpacing:".15em",textTransform:"uppercase",flexShrink:0}}>
+                  {d.tier === 1 ? "Priority" : "Important"}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Phase Grid */}
+      <div style={{marginBottom:"16px"}}>
+        <div className="section-header">
+          <div className="section-title">Playbook Phases</div>
+          <div className="section-sub">15-phase build process</div>
+        </div>
+      </div>
+      <div className="phase-grid">
+        {CONFIG.phases.map(p => (
+          <div key={p.id} className={`phase-card ${p.status}`}>
+            <div className="phase-num">Phase {p.n}</div>
+            <div className="phase-name">{p.name}</div>
+            <div className="phase-desc">{p.desc}</div>
+            <div className="phase-status">
+              {p.status === "complete"    ? "✓ Complete"    :
+               p.status === "in_progress" ? "● In Progress" :
+               p.status === "blocked"     ? "⚠ Blocked"    :
+               "○ Not Started"}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ── DECISIONS TAB ─────────────────────────────────────────────────────────
+function DecisionsTab({ decisions, onResolve }) {
+  const tier1 = CONFIG.decisions.filter(d => d.tier === 1);
+  const tier2 = CONFIG.decisions.filter(d => d.tier === 2);
+
+  return (
+    <div className="fade-in">
+      <div style={{marginBottom:"24px"}}>
+        <div className="section-header">
+          <div className="section-title">Decision Queue</div>
+          <div className="section-sub">Resolve Tier 1 first — they unblock everything else</div>
+        </div>
+        <p style={{fontSize:"13px",color:"var(--text3)",lineHeight:"1.7",maxWidth:"620px"}}>
+          These decisions must be resolved by the partners before development can proceed. Anyone can mark a decision resolved. Resolutions are saved to the shared database — all partners see the same state.
+        </p>
+      </div>
+
+      <div style={{marginBottom:"8px",fontSize:"9px",letterSpacing:".25em",textTransform:"uppercase",color:"var(--red)"}}>
+        Tier 1 — Non-Negotiable
+      </div>
+      <div className="decisions-list" style={{marginBottom:"32px"}}>
+        {tier1.map(d => (
+          <DecisionCard key={d.id} decision={d} dbState={decisions[d.id]} onResolve={onResolve}/>
+        ))}
+      </div>
+
+      <div style={{marginBottom:"8px",fontSize:"9px",letterSpacing:".25em",textTransform:"uppercase",color:"var(--gold)"}}>
+        Tier 2 — Important
+      </div>
+      <div className="decisions-list">
+        {tier2.map(d => (
+          <DecisionCard key={d.id} decision={d} dbState={decisions[d.id]} onResolve={onResolve}/>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function DecisionCard({ decision, dbState, onResolve }) {
+  const [showForm, setShowForm] = useState(false);
+  const [resolvedBy, setResolvedBy] = useState("");
+  const [resolution, setResolution] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  const isResolved = dbState?.status === "resolved";
+
+  async function handleResolve() {
+    if (!resolvedBy.trim() || !resolution.trim()) return;
+    setSaving(true);
+    await onResolve(decision.id, resolvedBy.trim(), resolution.trim());
+    setSaving(false);
+    setShowForm(false);
+  }
+
+  return (
+    <div className={`decision-card${isResolved ? " resolved" : ""}`}>
+      <div className="decision-header">
+        <div className={`decision-tier ${decision.tier === 1 ? "tier-1" : "tier-2"}`}>
+          {decision.tier === 1 ? "Priority" : "Important"}
+        </div>
+        <div className="decision-title">{decision.title}</div>
+      </div>
+
+      <div className="decision-desc">{decision.desc}</div>
+
+      <div className="decision-options">
+        {decision.options.map((o,i) => (
+          <div key={i} className="decision-option">{o}</div>
+        ))}
+      </div>
+
+      <div className="decision-blocks">
+        <span style={{marginRight:"8px",color:"var(--text3)"}}>Blocks:</span>
+        {decision.blocks.map(b => <span key={b}>{b}</span>)}
+      </div>
+
+      {isResolved ? (
+        <div>
+          <div className="resolved-badge">
+            <span style={{color:"var(--green)"}}>✓</span>
+            <span>Resolved by {dbState.resolved_by}</span>
+          </div>
+          <div className="resolved-note">{dbState.resolution}</div>
+        </div>
+      ) : (
+        <div>
+          <div className="decision-actions">
+            <button className="resolve-btn" onClick={()=>setShowForm(!showForm)}>
+              {showForm ? "Cancel" : "Mark as Resolved"}
+            </button>
+          </div>
+          {showForm && (
+            <div className="resolve-form">
+              <label className="form-label">Your name</label>
+              <input className="form-input" placeholder="First name" value={resolvedBy} onChange={e=>setResolvedBy(e.target.value)}/>
+              <label className="form-label">What was decided?</label>
+              <textarea className="form-textarea" placeholder="Describe the decision reached and any important nuance..." value={resolution} onChange={e=>setResolution(e.target.value)}/>
+              <div className="form-row">
+                <button className="form-submit" onClick={handleResolve} disabled={saving||!resolvedBy.trim()||!resolution.trim()}>
+                  {saving ? "Saving…" : "Save Resolution"}
+                </button>
+                <button className="form-cancel" onClick={()=>setShowForm(false)}>Cancel</button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── INTERVIEW TAB ─────────────────────────────────────────────────────────
+const INTERVIEW_SYSTEM = `You are conducting a structured stakeholder interview for a business planning session. The project is: "${CONFIG.project.tagline}"
+
+Ask questions ONE AT A TIME in a warm, conversational but professionally focused tone. Follow up on interesting or incomplete answers before moving to the next question.
+
+Questions to cover:
+${CONFIG.interview.coreQuestions.map((q,i)=>`${i+1}. ${q}`).join("\n")}
+
+Start by warmly welcoming the stakeholder by name and asking the first question. Keep responses concise — this is a dialogue, not a monologue. Never list all questions at once.
+
+When all questions have been covered, write exactly "INTERVIEW_COMPLETE" on its own line, then a brief warm closing message.`;
+
+function InterviewTab({ interviews, onInterviewComplete }) {
+  const [iScreen, setIScreen] = useState("landing");
+  const [userName, setUserName]   = useState("");
+  const [nameInput, setNameInput] = useState("");
+  const [messages, setMessages]   = useState([]);
+  const [inputText, setInputText] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const bottomRef = useRef(null);
+
+  useEffect(()=>{ bottomRef.current?.scrollIntoView({behavior:"smooth"}); }, [messages, isLoading]);
+
+  async function callClaude(msgs, resolvedName) {
+    setIsLoading(true);
+    try {
+      const res = await fetch("https://api.anthropic.com/v1/messages", {
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json",
+          "x-api-key": CONFIG.anthropic.key,
+          "anthropic-version":"2023-06-01",
+          "anthropic-dangerous-direct-browser-access":"true",
+        },
+        body: JSON.stringify({
+          model:"claude-haiku-4-5-20251001",
+          max_tokens:1024,
+          system: INTERVIEW_SYSTEM,
+          messages: msgs,
+        }),
+      });
+      const data = await res.json();
+      if (data.error) throw new Error(data.error.message);
+      const text = data.content?.find(b=>b.type==="text")?.text || "";
+      const updated = [...msgs, {role:"assistant",content:text}];
+      setMessages(updated);
+      if (text.includes("INTERVIEW_COMPLETE")) {
+        await dbSaveInterview(resolvedName, updated);
+        onInterviewComplete(resolvedName);
+        setTimeout(()=>setIScreen("complete"), 1400);
+      }
+    } catch(e) {
+      setMessages(prev=>[...prev,{role:"assistant",content:`⚠ ${e.message}`}]);
+    }
+    setIsLoading(false);
+  }
+
+  async function startInterview() {
+    const name = nameInput.trim();
+    if (!name) return;
+    if (interviews.includes(name)) { alert(`${name} has already completed the interview.`); return; }
+    setUserName(name);
+    setIScreen("interview");
+    const init = [{role:"user",content:`My name is ${name}. I'm ready to begin.`}];
+    setMessages(init);
+    await callClaude(init, name);
+  }
+
+  async function send() {
+    if (!inputText.trim() || isLoading) return;
+    const updated = [...messages, {role:"user",content:inputText}];
+    setMessages(updated);
+    setInputText("");
+    await callClaude(updated, userName);
+  }
+
+  const visible = messages.filter(m=>!m.content.includes("I'm ready to begin"));
+
+  return (
+    <div className="interview-wrap">
+      <div className="interview-header">
+        <div className="interview-title">Stakeholder Interview</div>
+        <div className="interview-status">
+          {interviews.length > 0
+            ? interviews.map(n=><span key={n} className="chip" style={{marginRight:"6px"}}>✓ {n}</span>)
+            : <span style={{color:"var(--text3)"}}>No interviews completed yet</span>}
+        </div>
+      </div>
+
+      <div className="interview-body">
+        {iScreen === "landing" && (
+          <div className="landing-inner fade-in">
+            <div className="int-eyebrow">Partner Interview</div>
+            <div className="int-title">Share your <span style={{color:"var(--gold)"}}>vision</span><br/>before we build.</div>
+            <div className="int-sub">
+              An AI-guided interview covering 10 strategic questions about the project. Takes 10–15 minutes. Answers are saved to the shared database.
+            </div>
+            {interviews.length > 0 && (
+              <div className="completed-chips">
+                <div className="int-lbl">Completed</div>
+                {interviews.map(n=><span key={n} className="chip">✓ {n}</span>)}
+              </div>
+            )}
+            <div className="int-card">
+              <label className="int-lbl">Your name</label>
+              <input className="int-input" placeholder="Enter your first name" value={nameInput} onChange={e=>setNameInput(e.target.value)} onKeyDown={e=>e.key==="Enter"&&startInterview()} autoFocus/>
+              <button className="int-btn" onClick={startInterview}>Begin Interview →</button>
+            </div>
+          </div>
+        )}
+
+        {iScreen === "interview" && (
+          <>
+            <div className="chat-wrap">
+              {visible.map((m,i)=>(
+                <div key={i} className={m.role==="assistant"?"bubble-ai":"bubble-user"}>
+                  {m.content.replace("INTERVIEW_COMPLETE","").trim()}
+                </div>
+              ))}
+              {isLoading && (
+                <div className="bubble-ai" style={{padding:"16px 17px"}}>
+                  <span className="dot"/><span className="dot" style={{animationDelay:".22s"}}/><span className="dot" style={{animationDelay:".44s"}}/>
+                </div>
+              )}
+              <div ref={bottomRef}/>
+            </div>
+            <div className="send-row">
+              <input className="send-input" placeholder="Your response…" value={inputText} onChange={e=>setInputText(e.target.value)} onKeyDown={e=>e.key==="Enter"&&!e.shiftKey&&send()} disabled={isLoading}/>
+              <button className="send-btn" onClick={send} disabled={isLoading||!inputText.trim()}>Send</button>
+            </div>
+          </>
+        )}
+
+        {iScreen === "complete" && (
+          <div className="complete-inner fade-in">
+            <div className="star">✦</div>
+            <div className="int-title" style={{textAlign:"center"}}>Thank you, <span style={{color:"var(--gold)"}}>{userName}</span>.</div>
+            <p style={{fontSize:"13px",color:"var(--text3)",textAlign:"center",maxWidth:"380px",marginTop:"12px",marginBottom:"28px",lineHeight:"1.8"}}>
+              Your responses have been saved. The project lead will generate an alignment report once all partners have completed their interviews.
+            </p>
+            <button className="int-btn" style={{width:"auto",padding:"10px 28px"}} onClick={()=>{setIScreen("landing");setNameInput("");}}>
+              ← Return
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ── DOCUMENTS TAB ─────────────────────────────────────────────────────────
+function DocumentsTab() {
+  return (
+    <div className="fade-in">
+      <div style={{marginBottom:"24px"}}>
+        <div className="section-header">
+          <div className="section-title">Project Documents</div>
+          <div className="section-sub">Planning and reference files</div>
+        </div>
+        <p style={{fontSize:"13px",color:"var(--text3)",lineHeight:"1.7",maxWidth:"560px"}}>
+          Update document URLs in the CONFIG object at the top of this file as documents are created and hosted.
+        </p>
+      </div>
+      <div className="docs-grid">
+        {CONFIG.documents.map(d => (
+          <div key={d.name} className="doc-card">
+            <div className="doc-name">{d.name}</div>
+            <div className="doc-desc">{d.desc}</div>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+              <div className={`doc-status ${d.status}`}>
+                {d.status === "complete"    ? "✓ Complete"    :
+                 d.status === "in_progress" ? "● In Progress" :
+                 d.status === "ready"       ? "● Ready"       :
+                 "○ Not Started"}
+              </div>
+              {d.url !== "#"
+                ? <a className="doc-link" href={d.url} target="_blank" rel="noopener">Open →</a>
+                : <span style={{fontSize:"11px",color:"var(--text3)"}}>URL not set</span>}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{marginTop:"32px",padding:"20px 24px",background:"var(--bg2)",border:"1px solid var(--border)"}}>
+        <div style={{fontSize:"10px",letterSpacing:".25em",textTransform:"uppercase",color:"var(--gold)",marginBottom:"10px"}}>
+          To update document links
+        </div>
+        <p style={{fontSize:"12px",color:"var(--text3)",lineHeight:"1.8"}}>
+          Edit the <code style={{background:"var(--bg3)",padding:"1px 6px",color:"var(--text2)"}}>documents</code> array in the CONFIG object at the top of this HTML file. Replace <code style={{background:"var(--bg3)",padding:"1px 6px",color:"var(--text2)"}}>"#"</code> with the actual URL for each document. Re-upload to Netlify to publish changes.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+{{ subject }}
+
+To accept this invitation, use the link below. {% if expiration_time %} This link is valid until {{ expiration_time|date:"n/j/y" }} at {{ expiration_time|time:"g:i A e" }}.{% endif %}
+
+{{ invitation_url }}
+
+If you have any questions, or require further assistance, feel free to call us at (502) 589-9353.
+
+
+Sincerely,
+
+Barrow Brown Carrington, PLLC
+
+2501 Nelson Miller Parkway
+Suite 102
+Louisville, KY 40223
+P: 502-589-9353
+F: 888-284-1070
+
+
+The information contained in this email may be confidential and/or legally privileged. It has been sent for the sole use of the intended recipient(s). If the reader of this message is not an intended recipient, you are hereby notified that any unauthorized review, use, disclosure, dissemination, distribution, or copying of this communication, or any of its contents, is strictly prohibited. If you have received this communication in error, please contact the sender by reply email and destroy all copies of the original message. THIS EMAIL IS NOT INTENDED AS LEGAL ADVICE AND IN NO WAY ESTABLISHES AN ATTORNEY-CLIENT RELATIONSHIP.

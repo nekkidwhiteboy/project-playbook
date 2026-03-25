@@ -1,0 +1,1311 @@
+[
+    {
+        "model": "dynamic_forms.dynamicformpage",
+        "pk": 30,
+        "fields": {
+            "title": "Parenting Time Schedule",
+            "rows": [
+                [
+                    {
+                        "name": "SourceType",
+                        "type": "TEXT_SHORT",
+                        "label": "Admin Item (SourceType)",
+                        "initialValue": "PTS",
+                        "adminItem": true,
+                        "rules": [],
+                        "validators": [
+                            "REQUIRED"
+                        ]
+                    },
+                    {
+                        "name": "Version",
+                        "type": "NUMBER",
+                        "label": "Admin Item (Version)",
+                        "initialValue": 2.0,
+                        "adminItem": true,
+                        "rules": [],
+                        "validators": [
+                            "REQUIRED"
+                        ]
+                    }
+                ],
+                [
+                    {
+                        "name": "PTS_Heading",
+                        "type": "HTML",
+                        "content": "<h1 style='{\"textAlign\": \"center\", \"fontSize\": \"3em\"}'>Parenting Time Schedule</h1>",
+                        "rules": []
+                    }
+                ],
+                [
+                    {
+                        "name": "PetFirst",
+                        "type": "TEXT_SHORT",
+                        "label": "Your Legal First Name",
+                        "validators": [
+                            "REQUIRED"
+                        ],
+                        "rules": []
+                    },
+                    {
+                        "name": "PetLast",
+                        "type": "TEXT_SHORT",
+                        "label": "Your Legal Last Name",
+                        "validators": [
+                            "REQUIRED"
+                        ],
+                        "rules": []
+                    }
+                ],
+                [
+                    {
+                        "name": "RespFirst",
+                        "type": "TEXT_SHORT",
+                        "label": "Spouse's Legal First Name",
+                        "validators": [
+                            "REQUIRED"
+                        ],
+                        "rules": []
+                    },
+                    {
+                        "name": "RespLast",
+                        "type": "TEXT_SHORT",
+                        "label": "Spouse's Legal Last Name",
+                        "validators": [
+                            "REQUIRED"
+                        ],
+                        "rules": []
+                    }
+                ],
+                [
+                    {
+                        "name": "BeginDate",
+                        "type": "DATE",
+                        "label": "When shall this parenting schedule come into effect?",
+                        "format": "MMMM D, YYYY",
+                        "validators": [
+                            "REQUIRED"
+                        ],
+                        "rules": []
+                    }
+                ]
+            ],
+            "parent_form": 2
+        }
+    },
+    {
+        "model": "dynamic_forms.dynamicformpage",
+        "pk": 31,
+        "fields": {
+            "title": "Exchange Locations",
+            "rows": [
+                [
+                    {
+                        "name": "ExchangeLocations_Heading",
+                        "type": "HTML",
+                        "content": "<h1 style='{\"textAlign\": \"center\", \"fontSize\": \"3em\"}'>Exchange Locations</h1>",
+                        "rules": []
+                    }
+                ],
+                [
+                    {
+                        "name": "Transportation_Info",
+                        "type": "HTML",
+                        "content": "<p>The receiving parent will always provide the transportation of the child(ren). Please select the location(s) below:</p>",
+                        "rules": []
+                    }
+                ],
+                [
+                    {
+                        "name": "SchoolLocation",
+                        "type": "SELECT",
+                        "label": "Exchange location while school is in session",
+                        "options": [
+                            "Child's School",
+                            "Parties' Homes"
+                        ],
+                        "validators": [
+                            "REQUIRED"
+                        ],
+                        "rules": []
+                    }
+                ],
+                [
+                    {
+                        "name": "SchoolLocation_Info",
+                        "type": "HTML",
+                        "content": "<p>The receiving parent will pick child(ren) up at from school.</p>",
+                        "rules": [
+                            "SchoolLocation == 'Child\\'s School'"
+                        ]
+                    }
+                ],
+                [
+                    {
+                        "name": "SchoolExchangeTime",
+                        "type": "TIME",
+                        "label": "Weekday exchange time when school IS in session",
+                        "tooltip": "",
+                        "min": "05:00",
+                        "max": "23:45",
+                        "step": 900,
+                        "validators": [
+                            "REQUIRED"
+                        ],
+                        "rules": [
+                            "SchoolLocation == 'Parties\\' Homes'"
+                        ]
+                    }
+                ],
+                [
+                    {
+                        "name": "NonSchoolLocation",
+                        "type": "SELECT",
+                        "label": "Exchange location while school is NOT in session",
+                        "options": [
+                            "Child's School",
+                            "Parties' Homes"
+                        ],
+                        "validators": [
+                            "REQUIRED"
+                        ],
+                        "rules": []
+                    }
+                ],
+                [
+                    {
+                        "name": "DefaultExchangeTime",
+                        "type": "TIME",
+                        "label": "Weekday exchange time when school is NOT in session",
+                        "tooltip": "",
+                        "min": "05:00",
+                        "max": "23:45",
+                        "step": 900,
+                        "validators": [
+                            "REQUIRED"
+                        ],
+                        "rules": [
+                            "NonSchoolLocation != null"
+                        ]
+                    }
+                ]
+            ],
+            "parent_form": 2
+        }
+    },
+    {
+        "model": "dynamic_forms.dynamicformpage",
+        "pk": 32,
+        "fields": {
+            "title": "Exchanges",
+            "rows": [
+                [
+                    {
+                        "name": "Exchanges_Heading",
+                        "type": "HTML",
+                        "content": "<h1 style='{\"textAlign\": \"center\", \"fontSize\": \"3em\"}'>Exchanges</h1>",
+                        "rules": []
+                    }
+                ],
+                [
+                    {
+                        "name": "Exchanges_Info",
+                        "type": "HTML",
+                        "content": "<p>The following represents a regular Parenting Time Schedule that starts over and repeats every two (2) weeks. One week is defined as a period of seven (7) consecutive days, beginning on Monday and ending on Sunday.</p>",
+                        "rules": []
+                    }
+                ],
+                [
+                    {
+                        "name": "TimeMode",
+                        "type": "SELECT",
+                        "label": "Admin Item (TimeMode)",
+                        "options": [
+                            "All",
+                            "Weekend",
+                            "None"
+                        ],
+                        "initialValue": "Weekend",
+                        "adminItem": true,
+                        "rules": [],
+                        "validators": [
+                            "REQUIRED"
+                        ]
+                    },
+                    {
+                        "name": "NumWeeks",
+                        "type": "NUMBER",
+                        "label": "Admin Item (NumWeeks)",
+                        "adminItem": true,
+                        "initialValue": 2,
+                        "min": 2,
+                        "max": 4,
+                        "rules": [],
+                        "validators": [
+                            "REQUIRED"
+                        ]
+                    }
+                ],
+                [
+                    {
+                        "name": "Exchanges",
+                        "type": "PTS",
+                        "label": "Enter the periods you will have the {{$if(length(ChildInfo) == 1, 'child', 'children')}}:",
+                        "templates": [
+                            {
+                                "label": "Week on, Week off",
+                                "value": "d:384-6:384;",
+                                "description": "Parties get alternating 7-day parenting time periods."
+                            },
+                            {
+                                "label": "2-2-3",
+                                "value": "0:-2:;4:-7:;9:-b:;",
+                                "description": "Frequent exchanges decreases prolonged absence(s)."
+                            },
+                            {
+                                "label": "2-2-5-5",
+                                "value": "0:-2:;4:-9:;",
+                                "description": "Petitioner always has kid(s) on Mondays and Tuesdays, as well as alternating weekends."
+                            }
+                        ],
+                        "numWeeks": "NumWeeks",
+                        "maxPeriods": 15,
+                        "timeMode": "{{TimeMode}}",
+                        "defaultTime": "12:00",
+                        "initialValue": [],
+                        "rules": [],
+                        "validators": [
+                            "REQUIRED"
+                        ]
+                    }
+                ]
+            ],
+            "parent_form": 2
+        }
+    },
+    {
+        "model": "dynamic_forms.dynamicformpage",
+        "pk": 33,
+        "fields": {
+            "title": "Breaks",
+            "rows": [
+                [
+                    {
+                        "name": "Breaks_Heading",
+                        "type": "HTML",
+                        "content": "<h1 style='{\"textAlign\": \"center\", \"fontSize\": \"3em\"}'>Breaks</h1><p style='{\"fontSize\":\"1.1em\"}'>Breaks are when school is not in session. Breaks do not start/stop on a specific day of the year but are dependant on the individual child's school schedule.</p><p style='{\"fontSize\":\"1.1em\",\"fontWeight\":700}'>Breaks supersede the regular Parenting Time Schedule.</p>",
+                        "rules": []
+                    }
+                ],
+                [
+                    {
+                        "name": "SPB_Heading",
+                        "type": "HTML",
+                        "content": "<h2 style='{\"fontSize\": \"2em\"}'>Spring Break</h2>",
+                        "rules": []
+                    }
+                ],
+                [
+                    {
+                        "name": "SPB_YesNo",
+                        "type": "RADIO",
+                        "label": "Will there be a separate schedule for Spring Break?",
+                        "options": [
+                            "Yes",
+                            "No"
+                        ],
+                        "validators": [
+                            "REQUIRED"
+                        ],
+                        "rules": []
+                    }
+                ],
+                [
+                    {
+                        "name": "SPB_Division",
+                        "type": "SELECT",
+                        "label": "How will this break be divided?",
+                        "options": [
+                            {
+                                "label": "The entire break will be alternated.",
+                                "value": "ALTERNATE"
+                            },
+                            {
+                                "label": "The break will be divided.",
+                                "value": "DIVIDED"
+                            },
+                            {
+                                "label": "One party will have the break.",
+                                "value": "ONE_PARTY"
+                            }
+                        ],
+                        "validators": [
+                            "REQUIRED"
+                        ],
+                        "rules": [
+                            "SPB_YesNo == 'Yes'"
+                        ]
+                    }
+                ],
+                [
+                    {
+                        "name": "SPB_Alternate",
+                        "type": "RADIO",
+                        "label": "How will the break be alternated?",
+                        "options": [
+                            "{{PetFirst}} will have Spring Break on all even years and {{RespFirst}} will have Spring Break on odd years.",
+                            "{{RespFirst}} will have Spring Break on all even years and {{PetFirst}} will have Spring Break on odd years."
+                        ],
+                        "validators": [
+                            "REQUIRED"
+                        ],
+                        "rules": [
+                            "SPB_Division == 'ALTERNATE'"
+                        ]
+                    },
+                    {
+                        "name": "SPB_Divided",
+                        "type": "RADIO",
+                        "label": "How will the break be divided?",
+                        "options": [
+                            "{{PetFirst}} will have the first half of the break every year and {{RespFirst}} will have the second half every year.",
+                            "{{RespFirst}} will have the first half of the break every year and {{PetFirst}} will have the second half every year.",
+                            "{{PetFirst}} will have the first half of the break on all even years and the second half on odd years.",
+                            "{{RespFirst}} will have the first half of the break on all even years and the second half on odd years."
+                        ],
+                        "validators": [
+                            "REQUIRED"
+                        ],
+                        "rules": [
+                            "SPB_Division == 'DIVIDED'"
+                        ]
+                    },
+                    {
+                        "name": "SPB_Time",
+                        "type": "TIME",
+                        "label": "Exchange Time",
+                        "min": "05:00",
+                        "max": "22:00",
+                        "step": 900,
+                        "tooltip": "This exchange will take place on the middlemost day of the break.",
+                        "validators": [
+                            "REQUIRED"
+                        ],
+                        "rules": [
+                            "SPB_Division == 'DIVIDED'"
+                        ]
+                    },
+                    {
+                        "name": "SPB_Always",
+                        "type": "RADIO",
+                        "label": "Which party will have the break?",
+                        "options": [
+                            "{{PetFirst}} will always have Spring Break.",
+                            "{{RespFirst}} will always have Spring Break."
+                        ],
+                        "vertical": true,
+                        "validators": [
+                            "REQUIRED"
+                        ],
+                        "rules": [
+                            "SPB_Division == 'ONE_PARTY'"
+                        ]
+                    }
+                ],
+                [
+                    {
+                        "name": "SPB_Divided_Explainer",
+                        "type": "HTML",
+                        "content": "<p>If the break has an even number of days, the exchange will take place on the day following the mid-point.</p>",
+                        "rules": [
+                            "SPB_Division == 'DIVIDED'"
+                        ]
+                    }
+                ],
+                [
+                    {
+                        "name": "SPB_Break",
+                        "type": "HTML",
+                        "content": "<hr />",
+                        "rules": []
+                    }
+                ],
+                [
+                    {
+                        "name": "SMB_Heading",
+                        "type": "HTML",
+                        "content": "<h2 style='{\"fontSize\": \"2em\"}'>Summer Break</h2>",
+                        "rules": []
+                    }
+                ],
+                [
+                    {
+                        "name": "SMB_YesNo",
+                        "type": "RADIO",
+                        "label": "Will there be a separate schedule for Summer Break?",
+                        "options": [
+                            "Yes",
+                            "No"
+                        ],
+                        "validators": [
+                            "REQUIRED"
+                        ],
+                        "rules": []
+                    }
+                ],
+                [
+                    {
+                        "name": "SMB_Division",
+                        "type": "SELECT",
+                        "label": "How will this break be divided?",
+                        "options": [
+                            {
+                                "label": "The entire break will be alternated.",
+                                "value": "ALTERNATE"
+                            },
+                            {
+                                "label": "The break will be divided.",
+                                "value": "DIVIDED"
+                            },
+                            {
+                                "label": "One party will have the break.",
+                                "value": "ONE_PARTY"
+                            }
+                        ],
+                        "validators": [
+                            "REQUIRED"
+                        ],
+                        "rules": [
+                            "SMB_YesNo == 'Yes'"
+                        ]
+                    }
+                ],
+                [
+                    {
+                        "name": "SMB_Alternate",
+                        "type": "RADIO",
+                        "label": "How will the break be alternated?",
+                        "options": [
+                            "{{PetFirst}} will have Summer Break on all even years and {{RespFirst}} will have Summer Break on odd years.",
+                            "{{RespFirst}} will have Summer Break on all even years and {{PetFirst}} will have Summer Break on odd years."
+                        ],
+                        "validators": [
+                            "REQUIRED"
+                        ],
+                        "rules": [
+                            "SMB_Division == 'ALTERNATE'"
+                        ]
+                    },
+                    {
+                        "name": "SMB_Divided",
+                        "type": "RADIO",
+                        "label": "How will the break be divided?",
+                        "options": [
+                            "{{PetFirst}} will have the first half of the break every year and {{RespFirst}} will have the second half every year.",
+                            "{{RespFirst}} will have the first half of the break every year and {{PetFirst}} will have the second half every year.",
+                            "{{PetFirst}} will have the first half of the break on all even years and the second half on odd years.",
+                            "{{RespFirst}} will have the first half of the break on all even years and the second half on odd years."
+                        ],
+                        "validators": [
+                            "REQUIRED"
+                        ],
+                        "rules": [
+                            "SMB_Division == 'DIVIDED'"
+                        ]
+                    },
+                    {
+                        "name": "SMB_Time",
+                        "type": "TIME",
+                        "label": "Exchange Time",
+                        "min": "05:00",
+                        "max": "22:00",
+                        "step": 900,
+                        "tooltip": "This exchange will take place on the middlemost day of the break.",
+                        "validators": [
+                            "REQUIRED"
+                        ],
+                        "rules": [
+                            "SMB_Division == 'DIVIDED'"
+                        ]
+                    },
+                    {
+                        "name": "SMB_Always",
+                        "type": "RADIO",
+                        "label": "Which party will have the break?",
+                        "options": [
+                            "{{PetFirst}} will always have Summer Break.",
+                            "{{RespFirst}} will always have Summer Break."
+                        ],
+                        "vertical": true,
+                        "validators": [
+                            "REQUIRED"
+                        ],
+                        "rules": [
+                            "SMB_Division == 'ONE_PARTY'"
+                        ]
+                    }
+                ],
+                [
+                    {
+                        "name": "SMB_Divided_Explainer",
+                        "type": "HTML",
+                        "content": "<p>If the break has an even number of days, the exchange will take place on the day following the mid-point.</p>",
+                        "rules": [
+                            "SMB_Division == 'DIVIDED'"
+                        ]
+                    }
+                ],
+                [
+                    {
+                        "name": "SMB_Break",
+                        "type": "HTML",
+                        "content": "<hr />",
+                        "rules": []
+                    }
+                ],
+                [
+                    {
+                        "name": "FB_Heading",
+                        "type": "HTML",
+                        "content": "<h2 style='{\"fontSize\": \"2em\"}'>Fall Break</h2>",
+                        "rules": []
+                    }
+                ],
+                [
+                    {
+                        "name": "FB_YesNo",
+                        "type": "RADIO",
+                        "label": "Will there be a separate schedule for Fall Break?",
+                        "options": [
+                            "Yes",
+                            "No"
+                        ],
+                        "validators": [
+                            "REQUIRED"
+                        ],
+                        "rules": []
+                    }
+                ],
+                [
+                    {
+                        "name": "FB_Division",
+                        "type": "SELECT",
+                        "label": "How will this break be divided?",
+                        "options": [
+                            {
+                                "label": "The entire break will be alternated.",
+                                "value": "ALTERNATE"
+                            },
+                            {
+                                "label": "The break will be divided.",
+                                "value": "DIVIDED"
+                            },
+                            {
+                                "label": "One party will have the break.",
+                                "value": "ONE_PARTY"
+                            }
+                        ],
+                        "validators": [
+                            "REQUIRED"
+                        ],
+                        "rules": [
+                            "FB_YesNo == 'Yes'"
+                        ]
+                    }
+                ],
+                [
+                    {
+                        "name": "FB_Alternate",
+                        "type": "RADIO",
+                        "label": "How will the break be alternated?",
+                        "options": [
+                            "{{PetFirst}} will have Fall Break on all even years and {{RespFirst}} will have Fall Break on odd years.",
+                            "{{RespFirst}} will have Fall Break on all even years and {{PetFirst}} will have Fall Break on odd years."
+                        ],
+                        "validators": [
+                            "REQUIRED"
+                        ],
+                        "rules": [
+                            "FB_Division == 'ALTERNATE'"
+                        ]
+                    },
+                    {
+                        "name": "FB_Divided",
+                        "type": "RADIO",
+                        "label": "How will the break be divided?",
+                        "options": [
+                            "{{PetFirst}} will have the first half of the break every year and {{RespFirst}} will have the second half every year.",
+                            "{{RespFirst}} will have the first half of the break every year and {{PetFirst}} will have the second half every year.",
+                            "{{PetFirst}} will have the first half of the break on all even years and the second half on odd years.",
+                            "{{RespFirst}} will have the first half of the break on all even years and the second half on odd years."
+                        ],
+                        "validators": [
+                            "REQUIRED"
+                        ],
+                        "rules": [
+                            "FB_Division == 'DIVIDED'"
+                        ]
+                    },
+                    {
+                        "name": "FB_Time",
+                        "type": "TIME",
+                        "label": "Exchange Time",
+                        "min": "05:00",
+                        "max": "22:00",
+                        "step": 900,
+                        "tooltip": "This exchange will take place on the middlemost day of the break.",
+                        "validators": [
+                            "REQUIRED"
+                        ],
+                        "rules": [
+                            "FB_Division == 'DIVIDED'"
+                        ]
+                    },
+                    {
+                        "name": "FB_Always",
+                        "type": "RADIO",
+                        "label": "Which party will have the break?",
+                        "options": [
+                            "{{PetFirst}} will always have Fall Break.",
+                            "{{RespFirst}} will always have Fall Break."
+                        ],
+                        "vertical": true,
+                        "validators": [
+                            "REQUIRED"
+                        ],
+                        "rules": [
+                            "FB_Division == 'ONE_PARTY'"
+                        ]
+                    }
+                ],
+                [
+                    {
+                        "name": "FB_Divided_Explainer",
+                        "type": "HTML",
+                        "content": "<p>If the break has an even number of days, the exchange will take place on the day following the mid-point.</p>",
+                        "rules": [
+                            "FB_Division == 'DIVIDED'"
+                        ]
+                    }
+                ],
+                [
+                    {
+                        "name": "WB_Break",
+                        "type": "HTML",
+                        "content": "<hr />",
+                        "rules": []
+                    }
+                ],
+                [
+                    {
+                        "name": "WB_Heading",
+                        "type": "HTML",
+                        "content": "<h2 style='{\"fontSize\": \"2em\"}'>Winter Break</h2>",
+                        "rules": []
+                    }
+                ],
+                [
+                    {
+                        "name": "WB_YesNo",
+                        "type": "RADIO",
+                        "label": "Will there be a separate schedule for Winter Break?",
+                        "options": [
+                            "Yes",
+                            "No"
+                        ],
+                        "validators": [
+                            "REQUIRED"
+                        ],
+                        "rules": []
+                    }
+                ],
+                [
+                    {
+                        "name": "WB_Division",
+                        "type": "SELECT",
+                        "label": "How will this break be divided?",
+                        "options": [
+                            {
+                                "label": "The entire break will be alternated.",
+                                "value": "ALTERNATE"
+                            },
+                            {
+                                "label": "The break will be divided.",
+                                "value": "DIVIDED"
+                            },
+                            {
+                                "label": "One party will have the break.",
+                                "value": "ONE_PARTY"
+                            }
+                        ],
+                        "validators": [
+                            "REQUIRED"
+                        ],
+                        "rules": [
+                            "WB_YesNo == 'Yes'"
+                        ]
+                    }
+                ],
+                [
+                    {
+                        "name": "WB_Alternate",
+                        "type": "RADIO",
+                        "label": "How will the break be alternated?",
+                        "options": [
+                            "{{PetFirst}} will have Winter Break on all even years and {{RespFirst}} will have Winter Break on odd years.",
+                            "{{RespFirst}} will have Winter Break on all even years and {{PetFirst}} will have Winter Break on odd years."
+                        ],
+                        "validators": [
+                            "REQUIRED"
+                        ],
+                        "rules": [
+                            "WB_Division == 'ALTERNATE'"
+                        ]
+                    },
+                    {
+                        "name": "WB_Divided",
+                        "type": "RADIO",
+                        "label": "How will the break be divided?",
+                        "options": [
+                            "{{PetFirst}} will have the first half of the break every year and {{RespFirst}} will have the second half every year.",
+                            "{{RespFirst}} will have the first half of the break every year and {{PetFirst}} will have the second half every year.",
+                            "{{PetFirst}} will have the first half of the break on all even years and the second half on odd years.",
+                            "{{RespFirst}} will have the first half of the break on all even years and the second half on odd years."
+                        ],
+                        "validators": [
+                            "REQUIRED"
+                        ],
+                        "rules": [
+                            "WB_Division == 'DIVIDED'"
+                        ]
+                    },
+                    {
+                        "name": "WB_Time",
+                        "type": "TIME",
+                        "label": "Time",
+                        "min": "05:00",
+                        "max": "22:00",
+                        "step": 900,
+                        "validators": [
+                            "REQUIRED"
+                        ],
+                        "rules": [
+                            "WB_Division == 'DIVIDED'"
+                        ]
+                    }
+                ],
+                [
+                    {
+                        "name": "XMB_Divided_Explainer",
+                        "type": "HTML",
+                        "content": "<p>If the break has an even number of days, the exchange will take place on the day following the mid-point.</p>",
+                        "rules": [
+                            "WB_Division == 'DIVIDED'"
+                        ]
+                    }
+                ],
+                [
+                    {
+                        "name": "WB_Always",
+                        "type": "RADIO",
+                        "label": "Which party will have the break?",
+                        "options": [
+                            "{{PetFirst}} will always have Winter Break.",
+                            "{{RespFirst}} will always have Winter Break."
+                        ],
+                        "vertical": true,
+                        "validators": [
+                            "REQUIRED"
+                        ],
+                        "rules": [
+                            "WB_Division == 'ONE_PARTY'"
+                        ]
+                    }
+                ],
+                [
+                    {
+                        "name": "WB_Break",
+                        "type": "HTML",
+                        "content": "<hr />",
+                        "rules": []
+                    }
+                ],
+                [
+                    {
+                        "name": "XMB_Heading",
+                        "type": "HTML",
+                        "content": "<h2 style='{\"fontSize\": \"2em\"}'>Christmas Break</h2>",
+                        "rules": []
+                    }
+                ],
+                [
+                    {
+                        "name": "XMB_YesNo",
+                        "type": "RADIO",
+                        "label": "Will there be a separate schedule for Christmas Break?",
+                        "options": [
+                            "Yes",
+                            "No"
+                        ],
+                        "validators": [
+                            "REQUIRED"
+                        ],
+                        "rules": []
+                    }
+                ],
+                [
+                    {
+                        "name": "XMB_Division",
+                        "type": "SELECT",
+                        "label": "How will this break be divided?",
+                        "options": [
+                            {
+                                "label": "The entire break will be alternated.",
+                                "value": "ALTERNATE"
+                            },
+                            {
+                                "label": "The break will be divided.",
+                                "value": "DIVIDED"
+                            },
+                            {
+                                "label": "One party will have the break.",
+                                "value": "ONE_PARTY"
+                            }
+                        ],
+                        "validators": [
+                            "REQUIRED"
+                        ],
+                        "rules": [
+                            "XMB_YesNo == 'Yes'"
+                        ]
+                    }
+                ],
+                [
+                    {
+                        "name": "XMB_Alternate",
+                        "type": "RADIO",
+                        "label": "How will the break be alternated?",
+                        "options": [
+                            "{{PetFirst}} will have Christmas Break on all even years and {{RespFirst}} will have Christmas Break on odd years.",
+                            "{{RespFirst}} will have Christmas Break on all even years and {{PetFirst}} will have Christmas Break on odd years."
+                        ],
+                        "validators": [
+                            "REQUIRED"
+                        ],
+                        "rules": [
+                            "XMB_Division == 'ALTERNATE'"
+                        ]
+                    },
+                    {
+                        "name": "XMB_Divided",
+                        "type": "RADIO",
+                        "label": "How will the break be divided?",
+                        "options": [
+                            "{{PetFirst}} will have the first half of the break every year and {{RespFirst}} will have the second half every year.",
+                            "{{RespFirst}} will have the first half of the break every year and {{PetFirst}} will have the second half every year.",
+                            "{{PetFirst}} will have the first half of the break on all even years and the second half on odd years.",
+                            "{{RespFirst}} will have the first half of the break on all even years and the second half on odd years."
+                        ],
+                        "validators": [
+                            "REQUIRED"
+                        ],
+                        "rules": [
+                            "XMB_Division == 'DIVIDED'"
+                        ]
+                    },
+                    {
+                        "name": "XMB_Month",
+                        "type": "SELECT",
+                        "label": "Month",
+                        "options": [
+                            "November",
+                            "December",
+                            "January",
+                            "February"
+                        ],
+                        "style": {
+                            "minWidth": "110px"
+                        },
+                        "validators": [
+                            "REQUIRED"
+                        ],
+                        "rules": [
+                            "XMB_Division == 'DIVIDED'"
+                        ]
+                    },
+                    {
+                        "name": "XMB_Day",
+                        "type": "NUMBER",
+                        "label": "Day",
+                        "min": 1,
+                        "max": 31,
+                        "style": {
+                            "width": "75px"
+                        },
+                        "validators": [
+                            "REQUIRED"
+                        ],
+                        "rules": [
+                            "XMB_Division == 'DIVIDED'"
+                        ]
+                    },
+                    {
+                        "name": "XMB_Time",
+                        "type": "TIME",
+                        "label": "Time",
+                        "min": "05:00",
+                        "max": "22:00",
+                        "step": 900,
+                        "validators": [
+                            "REQUIRED"
+                        ],
+                        "rules": [
+                            "XMB_Division == 'DIVIDED'"
+                        ]
+                    }
+                ],
+                [
+                    {
+                        "name": "XMB_Always",
+                        "type": "RADIO",
+                        "label": "Which party will have the break?",
+                        "options": [
+                            "{{PetFirst}} will always have Christmas Break.",
+                            "{{RespFirst}} will always have Christmas Break."
+                        ],
+                        "vertical": true,
+                        "validators": [
+                            "REQUIRED"
+                        ],
+                        "rules": [
+                            "XMB_Division == 'ONE_PARTY'"
+                        ]
+                    }
+                ],
+                [
+                    {
+                        "name": "XMB_Break",
+                        "type": "HTML",
+                        "content": "<hr />",
+                        "rules": []
+                    }
+                ],
+                [
+                    {
+                        "name": "VacationWeeks",
+                        "type": "NUMBER",
+                        "label": "How many weeks of vacation will each party be entitled to each year?",
+                        "min": 0,
+                        "max": 26,
+                        "precision": 0,
+                        "tooltip": "A week is defined as seven (7) consecutive days. Either party may elect to take their vacation time upon giving the other party no less than thirty (30) days written notice of their intent to take vacation time.",
+                        "validators": [
+                            "REQUIRED"
+                        ],
+                        "rules": []
+                    }
+                ]
+            ],
+            "parent_form": 2
+        }
+    },
+    {
+        "model": "dynamic_forms.dynamicformpage",
+        "pk": 34,
+        "fields": {
+            "title": "Holidays",
+            "rows": [
+                [
+                    {
+                        "name": "Holidays_Header",
+                        "type": "HTML",
+                        "content": "<h1 style='{\"textAlign\": \"center\", \"fontSize\": \"3em\"}'>Holidays</h1><p style='{\"fontSize\":\"1.1em\"}'>Holidays are single or partial day exceptions to the regular Parenting Time Schedule which occur annually.</p><p style='{\"fontSize\":\"1.1em\",\"fontWeight\":700}'>Holidays supersede the regular Parenting Time Schedule.</p>",
+                        "rules": []
+                    }
+                ],
+                {
+                    "name": "Holidays",
+                    "type": "MULTI",
+                    "label": "Please enter the following information about any needed holidays",
+                    "rows": [
+                        [
+                            {
+                                "name": "Holidays_{{$index}}_DefaultHeader",
+                                "type": "HTML",
+                                "content": "<h2 style='{\"textAlign\": \"center\"}'>Holiday {{$index + 1}}</h2>",
+                                "rules": [
+                                    "not(Holidays[$index].Name)"
+                                ]
+                            },
+                            {
+                                "name": "Holidays_{{$index}}_Header",
+                                "type": "HTML",
+                                "content": "<h2 style='{\"textAlign\": \"center\"}'>{{Holidays[$index].Name}}</h2>",
+                                "rules": [
+                                    "$truthy(Holidays[$index].Name)"
+                                ]
+                            }
+                        ],
+                        [
+                            {
+                                "name": "Holidays.{{$index}}.Name",
+                                "type": "TEXT_SHORT",
+                                "label": "Name of holiday",
+                                "rules": [],
+                                "validators": [
+                                    "REQUIRED"
+                                ],
+                                "tooltip": "Enter a name of a custom holiday, or select from the predefined list.",
+                                "autoComplete": [
+                                    "New Year's Day",
+                                    "Martin Luther King Jr. Day",
+                                    "President's Day",
+                                    "Easter",
+                                    "Mother's Day",
+                                    "Memorial Day",
+                                    "Father's Day",
+                                    "Independence Day",
+                                    "Labor Day",
+                                    "Columbus Day/Indigenous Peoples' Day",
+                                    "Halloween",
+                                    "Thanksgiving",
+                                    "Christmas Eve",
+                                    "Christmas Day",
+                                    "Hanukkah"
+                                ]
+                            }
+                        ],
+                        [
+                            {
+                                "name": "Holidays.{{$index}}.ResumeDay",
+                                "type": "SELECT",
+                                "label": "The regular schedule will resume on the",
+                                "options": [
+                                    "Same Day",
+                                    "Following Day"
+                                ],
+                                "rules": [],
+                                "validators": [
+                                    "REQUIRED"
+                                ]
+                            }
+                        ],
+                        [
+                            {
+                                "name": "Holidays.{{$index}}.EveryYearYesNo",
+                                "type": "RADIO",
+                                "label": "Will you or your spouse have this holiday every year?",
+                                "options": [
+                                    "Yes",
+                                    "No"
+                                ],
+                                "rules": [],
+                                "validators": [
+                                    "REQUIRED"
+                                ]
+                            }
+                        ],
+                        [
+                            {
+                                "name": "Holidays.{{$index}}.OddLabel",
+                                "type": "HTML",
+                                "content": "<h3>Odd Years</h3>",
+                                "rules": [
+                                    "Holidays[$index].EveryYearYesNo == 'No'"
+                                ]
+                            }
+                        ],
+                        [
+                            {
+                                "name": "Holidays.{{$index}}.OddParty",
+                                "type": "SELECT",
+                                "label": "Party",
+                                "options": [
+                                    "{{PetFirst}}",
+                                    "{{RespFirst}}"
+                                ],
+                                "style": {
+                                    "width": "150px"
+                                },
+                                "rules": [
+                                    "Holidays[$index].EveryYearYesNo == 'No'"
+                                ],
+                                "validators": [
+                                    "REQUIRED"
+                                ]
+                            },
+                            {
+                                "name": "Holidays.{{$index}}.OddBeginTime",
+                                "type": "TIME",
+                                "label": "Begin Time",
+                                "min": "05:00",
+                                "max": "23:00",
+                                "step": 900,
+                                "tooltip": "This is the time when the deviation from the normal time schedule begins.",
+                                "rules": [
+                                    "Holidays[$index].EveryYearYesNo == 'No'"
+                                ],
+                                "validators": [
+                                    "REQUIRED"
+                                ]
+                            },
+                            {
+                                "name": "Holidays.{{$index}}.OddEndTime",
+                                "type": "TIME",
+                                "label": "End Time",
+                                "min": "05:00",
+                                "max": "23:00",
+                                "step": 900,
+                                "tooltip": "This is the time when the normal time schedule will resume.",
+                                "rules": [
+                                    "Holidays[$index].EveryYearYesNo == 'No'"
+                                ],
+                                "validators": [
+                                    "REQUIRED"
+                                ]
+                            }
+                        ],
+                        [
+                            {
+                                "name": "Holidays.{{$index}}.EvenLabel",
+                                "type": "HTML",
+                                "content": "<h3>Even Years</h3>",
+                                "rules": [
+                                    "Holidays[$index].EveryYearYesNo == 'No'"
+                                ]
+                            }
+                        ],
+                        [
+                            {
+                                "name": "Holidays.{{$index}}.EvenParty",
+                                "type": "SELECT",
+                                "label": "Party",
+                                "options": [
+                                    "{{PetFirst}}",
+                                    "{{RespFirst}}"
+                                ],
+                                "style": {
+                                    "width": "150px"
+                                },
+                                "rules": [
+                                    "Holidays[$index].EveryYearYesNo == 'No'"
+                                ],
+                                "validators": [
+                                    "REQUIRED"
+                                ]
+                            },
+                            {
+                                "name": "Holidays.{{$index}}.EvenBeginTime",
+                                "type": "TIME",
+                                "label": "Begin Time",
+                                "min": "05:00",
+                                "max": "23:00",
+                                "step": 900,
+                                "tooltip": "This is the time when the deviation from the normal time schedule begins.",
+                                "rules": [
+                                    "Holidays[$index].EveryYearYesNo == 'No'"
+                                ],
+                                "validators": [
+                                    "REQUIRED"
+                                ]
+                            },
+                            {
+                                "name": "Holidays.{{$index}}.EvenEndTime",
+                                "type": "TIME",
+                                "label": "End Time",
+                                "min": "05:00",
+                                "max": "23:00",
+                                "step": 900,
+                                "tooltip": "This is the time when the normal time schedule will resume.",
+                                "rules": [
+                                    "Holidays[$index].EveryYearYesNo == 'No'"
+                                ],
+                                "validators": [
+                                    "REQUIRED"
+                                ]
+                            }
+                        ],
+                        [
+                            {
+                                "name": "Holidays.{{$index}}.EveryLabel",
+                                "type": "HTML",
+                                "content": "<h3>Every Year</h3>",
+                                "rules": [
+                                    "Holidays[$index].EveryYearYesNo == 'Yes'"
+                                ]
+                            }
+                        ],
+                        [
+                            {
+                                "name": "Holidays.{{$index}}.EveryParty",
+                                "type": "SELECT",
+                                "label": "Party",
+                                "options": [
+                                    "{{PetFirst}}",
+                                    "{{RespFirst}}"
+                                ],
+                                "style": {
+                                    "width": "150px"
+                                },
+                                "rules": [
+                                    "Holidays[$index].EveryYearYesNo == 'Yes'"
+                                ],
+                                "validators": [
+                                    "REQUIRED"
+                                ]
+                            },
+                            {
+                                "name": "Holidays.{{$index}}.EveryBeginTime",
+                                "type": "TIME",
+                                "label": "Begin Time",
+                                "min": "05:00",
+                                "max": "23:00",
+                                "step": 900,
+                                "tooltip": "This is the time when the deviation from the normal time schedule begins.",
+                                "rules": [
+                                    "Holidays[$index].EveryYearYesNo == 'Yes'"
+                                ],
+                                "validators": [
+                                    "REQUIRED"
+                                ]
+                            },
+                            {
+                                "name": "Holidays.{{$index}}.EveryEndTime",
+                                "type": "TIME",
+                                "label": "End Time",
+                                "min": "05:00",
+                                "max": "23:00",
+                                "step": 900,
+                                "tooltip": "This is the time when the normal time schedule will resume.",
+                                "rules": [
+                                    "Holidays[$index].EveryYearYesNo == 'Yes'"
+                                ],
+                                "validators": [
+                                    "REQUIRED"
+                                ]
+                            }
+                        ],
+                        [
+                            {
+                                "name": "Holiday_{{$index}}_Break",
+                                "type": "HTML",
+                                "content": "<hr style='{\"marginTop\":\"0px\"}'/>",
+                                "rules": [
+                                    "length(Holidays) > 1",
+                                    "$index + 1 != length(Holidays)"
+                                ]
+                            }
+                        ]
+                    ],
+                    "minItems": 0,
+                    "maxItems": 20,
+                    "initialItems": 0,
+                    "emptyText": "No Holidays",
+                    "rules": [],
+                    "validators": []
+                }
+            ],
+            "parent_form": 2
+        }
+    }
+]

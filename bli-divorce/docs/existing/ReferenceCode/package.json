@@ -1,0 +1,82 @@
+{
+  "name": "tomato-seed-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "proxy": "http://127.0.0.1:8000",
+  "dependencies": {
+    "@ant-design/icons": "^4.7.0",
+    "@craco/craco": "^7.0.0",
+    "@sentry/react": "^7.69.0",
+    "@tanstack/react-query": "^5.4.3",
+    "@tanstack/react-query-devtools": "^5.4.3",
+    "@tinymce/tinymce-react": "^4.3.0",
+    "antd": "^4.24.8",
+    "axios": "^1.2.3",
+    "buffer": "^6.0.3",
+    "craco-less": "^2.1.0-alpha.0",
+    "dayjs": "^1.11.4",
+    "expr-eval": "^2.0.2",
+    "formik": "^2.2.9",
+    "formik-antd": "^2.0.4",
+    "formik-persist": "^1.1.0",
+    "history": "^5.3.0",
+    "lodash": "^4.17.21",
+    "react": "^18.2.0",
+    "react-diff-viewer-continued": "^3.2.6",
+    "react-dom": "^18.2.0",
+    "react-helmet-async": "^2.0.5",
+    "react-html-map": "^0.1.1",
+    "react-idle-timer": "^5.7.2",
+    "react-phone-number-input": "^3.2.23",
+    "react-query-kit": "^2.0.8",
+    "react-router-dom": "^6.28.1",
+    "react-scripts": "^5.0.1",
+    "set.prototype.difference": "^1.1.6",
+    "set.prototype.union": "^1.1.3",
+    "ua-parser-js": "^1.0.37",
+    "web-vitals": "^2.1.4"
+  },
+  "devDependencies": {
+    "@sentry/cli": "^2.21.1",
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/user-event": "^14.4.3",
+    "@types/jest": "^29.2.3",
+    "@types/lodash": "^4.14.191",
+    "@types/node": "^18.11.9",
+    "@types/react": "^18.0.25",
+    "@types/react-dom": "^18.0.9",
+    "@types/react-router-dom": "^5.3.3",
+    "@types/ua-parser-js": "^0.7.39",
+    "antd-dayjs-webpack-plugin": "^1.0.6",
+    "typescript": "^5.8.2"
+  },
+  "scripts": {
+    "start": "craco start",
+    "build": "craco build && npm run sentry:sourcemaps",
+    "server": "python manage.py runserver",
+    "sentry:sourcemaps": "sentry-cli sourcemaps inject --org barrow-brown-carrington --project tomatoseed-frontend ./build && sentry-cli sourcemaps upload --org barrow-brown-carrington --project tomatoseed-frontend ./build"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "cracoConfig": "src/craco.config.js",
+  "overrides": {
+    "typescript": "^5.8.2"
+  }
+}

@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>App Discovery Interview — Project Playbook</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+@keyframes pulse{0%,100%{opacity:.2}50%{opacity:1}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+html,body{height:100%;background:#080a0f;font-family:'DM Sans',sans-serif;color:#e4e8f0}
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap');
+.page{min-height:100vh;background:#080a0f;display:flex;flex-direction:column;align-items:center}
+.header{width:100%;border-bottom:1px solid #1a2030;padding:18px 32px;display:flex;justify-content:space-between;align-items:center;background:#0c0e14}
+.logo{font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:#6a9fd4;font-family:'DM Sans',sans-serif;font-weight:600}
+.project-tag{font-size:11px;color:#3a4460;letter-spacing:.15em;text-transform:uppercase}
+.main{flex:1;width:100%;max-width:680px;padding:52px 24px}
+.eyebrow{font-size:11px;letter-spacing:.32em;color:#6a9fd4;font-family:'DM Sans',sans-serif;text-transform:uppercase;margin-bottom:16px}
+h1{font-size:clamp(26px,5vw,40px);font-weight:500;line-height:1.2;margin-bottom:14px;color:#f0f4ff}
+h2{font-size:clamp(20px,4vw,28px);font-weight:500;line-height:1.2;margin-bottom:14px;color:#f0f4ff}
+.blue{color:#6a9fd4}
+.sub{font-size:15px;color:#5a6480;line-height:1.85;margin-bottom:36px;font-family:'DM Sans',sans-serif}
+.card{background:#0e1018;border:1px solid #1a2030;padding:28px;margin-bottom:16px}
+.lbl{font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:#6a9fd4;font-family:'DM Sans',sans-serif;font-weight:600;margin-bottom:10px;display:block}
+input[type=text],input[type=password]{width:100%;background:#080a0f;border:1px solid #1a2030;color:#e4e8f0;padding:13px 15px;font-size:15px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s}
+input:focus{border-color:#6a9fd455}
+.btn{background:#6a9fd4;color:#080a0f;border:none;padding:13px 28px;font-size:11px;letter-spacing:.2em;text-transform:uppercase;font-family:'DM Sans',sans-serif;font-weight:700;cursor:pointer;margin-top:14px;width:100%;transition:opacity .2s}
+.btn:hover{opacity:.85}
+.btn:disabled{background:#1a2030;color:#3a4460;cursor:default;opacity:1}
+.ghost{background:none;border:1px solid #1a2030;color:#3a4460;padding:6px 14px;font-size:10px;letter-spacing:.18em;text-transform:uppercase;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .2s}
+.ghost:hover{border-color:#6a9fd455;color:#6a9fd488}
+.outline{background:transparent;border:1px solid #6a9fd444;color:#6a9fd4;padding:10px 24px;font-size:10px;letter-spacing:.18em;text-transform:uppercase;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer;margin-top:8px;width:100%}
+.chip{display:inline-block;background:#0e1a10;border:1px solid #1e3828;padding:3px 11px;font-size:12px;font-family:'DM Sans',sans-serif;color:#5abf82;margin-right:6px;margin-bottom:6px}
+.chat-wrap{flex:1;overflow-y:auto;padding:20px 0;display:flex;flex-direction:column;gap:14px;scrollbar-width:thin;scrollbar-color:#1a2030 transparent}
+.bubble-ai{max-width:88%;padding:15px 19px;font-size:15px;line-height:1.8;font-family:'DM Sans',sans-serif;align-self:flex-start;background:#0e1018;border:1px solid #1a2030;color:#d4d8e8;white-space:pre-wrap;animation:fadeUp .3s ease}
+.bubble-user{max-width:88%;padding:15px 19px;font-size:15px;line-height:1.8;font-family:'DM Sans',sans-serif;align-self:flex-end;background:#0e1420;border:1px solid #1a2840;color:#8ab4d4;white-space:pre-wrap;animation:fadeUp .3s ease}
+.dot{display:inline-block;width:5px;height:5px;border-radius:50%;background:#6a9fd4;margin:0 2px;animation:pulse 1.4s ease-in-out infinite}
+.send-row{display:flex;gap:10px;border-top:1px solid #1a2030;padding-top:16px;flex-shrink:0}
+.send-input{flex:1;background:#080a0f;border:1px solid #1a2030;color:#e4e8f0;padding:12px 15px;font-size:15px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s}
+.send-input:focus{border-color:#6a9fd455}
+.send-btn{background:#6a9fd4;color:#080a0f;border:none;padding:0 24px;font-size:12px;font-family:'DM Sans',sans-serif;font-weight:700;cursor:pointer;flex-shrink:0;transition:opacity .2s}
+.send-btn:hover{opacity:.85}
+.send-btn:disabled{background:#1a2030;color:#3a4460;cursor:default}
+.notice{background:#0e1018;border:1px solid #6a9fd422;padding:13px 16px;font-size:13px;font-family:'DM Sans',sans-serif;color:#5a6480;line-height:1.65;margin-bottom:20px}
+.err{color:#c46060;font-size:13px;font-family:'DM Sans',sans-serif;margin-top:6px}
+.progress-bar{height:3px;background:#1a2030;margin-bottom:0;width:100%}
+.progress-fill{height:100%;background:#6a9fd4;transition:width .6s ease}
+.section-divider{display:flex;align-items:center;gap:12px;margin:8px 0 4px}
+.section-divider span{font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:#3a4460;white-space:nowrap}
+.section-divider::before,.section-divider::after{content:'';flex:1;height:1px;background:#1a2030}
+/* Admin */
+.admin-page{min-height:100vh;background:#080a0f;display:flex;flex-direction:column;align-items:center}
+.response-block{background:#0e1018;border:1px solid #1a2030;padding:24px;margin-bottom:20px}
+.msg-role{font-size:10px;text-transform:uppercase;letter-spacing:.15em;font-family:'DM Sans',sans-serif;margin-bottom:4px}
+.msg-text{font-size:14px;line-height:1.7;font-family:'DM Sans',sans-serif;color:#8090a8;white-space:pre-wrap}
+.compilation-box{margin-top:20px;white-space:pre-wrap;font-size:14px;line-height:1.85;font-family:'DM Sans',sans-serif;color:#9098b0;padding:24px;background:#0e1018;border:1px solid #1a2030}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+
+// ── CONFIG ──────────────────────────────────────────────────────────────────
+const SUPABASE_URL = "https://kxjzmzjoysiiyidlqzts.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt4anptempveXNpaXlpZGxxenRzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyMzQ3OTYsImV4cCI6MjA4OTgxMDc5Nn0.2VWsV7Om9ElN4dZu82uAuD7_5mo-JSn2F8bg5VZRfnM";
+const ANTHROPIC_KEY = "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";
+const ADMIN_PIN = "1234";
+const PROJECT_NAME = "Mental Health App — Discovery Interview";
+
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// ── INTERVIEW SECTIONS ──────────────────────────────────────────────────────
+// 9 thematic sections, ~3-4 questions each. The AI asks one at a time
+// and follows up before moving to the next section.
+const SECTIONS = [
+  {
+    id: "background",
+    label: "Your Background & Motivation",
+    questions: [
+      "Let's start at the beginning. Tell me about yourself — what's your background, and what led you to want to build a mental health app?",
+      "What personal experience, observation, or problem convinced you this app needs to exist?",
+      "Have you worked in mental health, tech, or healthcare before — professionally or personally?",
+    ]
+  },
+  {
+    id: "concept",
+    label: "The Core Concept",
+    questions: [
+      "Describe your app in plain language — if you were explaining it to a friend over coffee, what would you say?",
+      "What is the central theory or belief behind how this app helps people? What does it assume about how people heal, grow, or manage their mental health?",
+      "What does this app do that nothing else currently does — or does better than anything that exists?",
+    ]
+  },
+  {
+    id: "user",
+    label: "The Ideal User",
+    questions: [
+      "Paint me a picture of the ideal user. Give them a name, an age, a life situation. What does their day look like, and where does mental health fit into it?",
+      "What is this person struggling with specifically? What have they already tried that hasn't worked?",
+      "What does success look like for this person after using your app for 90 days? What has changed in their life?",
+      "Who is explicitly NOT the target user — who is this app not designed for?",
+    ]
+  },
+  {
+    id: "features",
+    label: "Features & Functionality",
+    questions: [
+      "Walk me through a typical session in the app — what does the user open it to do, what happens step by step, and how do they feel when they close it?",
+      "What are the absolute must-have features that need to exist on day one for the app to deliver its core promise?",
+      "What features are you excited about but could wait for a version 2?",
+      "Does the app require any ongoing input from the user — journals, check-ins, mood tracking, exercises? Walk me through what that looks like.",
+    ]
+  },
+  {
+    id: "ai_logic",
+    label: "AI, Logic & Intelligence",
+    questions: [
+      "Does the app need to be intelligent or adaptive — does it respond differently based on what the user tells it, or how they're progressing?",
+      "Is there a conversational AI component — a chatbot, coach, or companion the user talks to? If so, describe what it does and how it communicates.",
+      "What clinical frameworks, therapeutic models, or evidence-based approaches should the app be grounded in — for example CBT, DBT, ACT, mindfulness, somatic therapy, or something else?",
+      "Are there any decision trees, escalation paths, or safety protocols the app needs to follow — for example, if a user expresses suicidal ideation?",
+    ]
+  },
+  {
+    id: "practitioner",
+    label: "Therapist & Practitioner Involvement",
+    questions: [
+      "Does a licensed therapist, counselor, or other practitioner play any role in the app experience — either as a user, a supervisor, or a resource?",
+      "Is the app designed to work alongside therapy, to replace it for people who can't access it, or to operate independently of any clinical relationship?",
+      "If practitioners are involved, what do they see or do inside the app? Do they have their own dashboard, messaging, or oversight tools?",
+    ]
+  },
+  {
+    id: "device",
+    label: "Device & Platform Features",
+    questions: [
+      "Beyond the screen, what device capabilities does the app need — microphone, camera, notifications, biometrics, GPS, wearable integration, offline mode?",
+      "How often do you expect users to open the app — multiple times a day, once a day, weekly? Does the app reach out to the user proactively, or only when they open it?",
+      "Are there any accessibility requirements — screen readers, large text, color contrast, multiple languages?",
+    ]
+  },
+  {
+    id: "monetization",
+    label: "Business Model & Monetization",
+    questions: [
+      "Is this app free, paid, or freemium? Walk me through how you envision making money from it.",
+      "Who pays — the end user, an employer, an insurance company, a healthcare system, or some combination?",
+      "What does the competitive landscape look like — what apps are you aware of that do something similar, and how is yours different or better?",
+    ]
+  },
+  {
+    id: "constraints",
+    label: "Constraints, Compliance & Vision",
+    questions: [
+      "Mental health apps operate in a sensitive regulatory space. Are you thinking about HIPAA compliance, clinical validation, FDA classification, or other regulatory considerations?",
+      "What privacy and data handling requirements do you have in mind — especially around sensitive mental health data?",
+      "What does version 1 need to accomplish in terms of users, outcomes, or revenue to be considered a success?",
+      "Is there anything about your vision for this app that I haven't asked about — something important you want to make sure is captured?",
+    ]
+  },
+];
+
+const TOTAL_SECTIONS = SECTIONS.length;
+const ALL_QUESTIONS = SECTIONS.flatMap(s => s.questions);
+
+const SYSTEM_PROMPT = `You are conducting an in-depth product discovery interview for a mental health app. Your goal is to fully understand the app concept so a development team can build it accurately.
+
+You are warm, curious, and professionally focused. You ask questions ONE AT A TIME. You follow up naturally when an answer is interesting, incomplete, or raises new questions — but keep follow-ups brief (one at a time).
+
+Work through these thematic sections in order. For each section, cover the questions — but ask them conversationally, not robotically. Adapt based on what the person tells you.
+
+SECTIONS AND QUESTIONS:
+${SECTIONS.map((s,i) => `\n[Section ${i+1}: ${s.label}]\n${s.questions.map((q,j)=>`${j+1}. ${q}`).join('\n')}`).join('\n')}
+
+IMPORTANT GUIDELINES:
+- Never list multiple questions at once
+- When someone gives a rich answer, follow up before moving on
+- If someone mentions something clinically significant (suicide, self-harm, severe illness), acknowledge it respectfully and ask what role the app plays for people in crisis
+- This is a discovery interview, not a therapy session — stay curious and objective
+- Keep your responses to 2-4 sentences maximum
+- After completing all sections, write "INTERVIEW_COMPLETE" on its own line, then thank them warmly and tell them the development team will review their responses
+
+Start by warmly introducing yourself, explaining the purpose of this interview, and asking the first question.`;
+
+// ── DB HELPERS ──────────────────────────────────────────────────────────────
+async function dbInsert(name, messages, isTest) {
+  const { data, error } = await sb
+    .from("mha_interviews")
+    .insert({ name, messages, is_test: isTest || false, status: "in_progress" })
+    .select("id")
+    .single();
+  if (error) throw new Error(error.message);
+  return data.id;
+}
+
+async function dbUpdate(id, messages, status) {
+  const { error } = await sb
+    .from("mha_interviews")
+    .update({ messages, status, updated_at: new Date().toISOString() })
+    .eq("id", id);
+  if (error) throw new Error(error.message);
+}
+
+async function dbGetNames() {
+  const { data, error } = await sb.from("mha_interviews").select("name");
+  if (error) return [];
+  return [...new Set((data||[]).map(r=>r.name))];
+}
+
+async function dbGetAll() {
+  const { data, error } = await sb.from("mha_interviews").select("name, messages, created_at");
+  if (error) return {};
+  const map = {};
+  for (const row of (data||[])) { map[row.name] = row.messages; }
+  return map;
+}
+
+// ── APP ─────────────────────────────────────────────────────────────────────
+function App() {
+  const [screen, setScreen]           = useState("landing");
+  const [userName, setUserName]       = useState("");
+  const [nameInput, setNameInput]     = useState("");
+  const [messages, setMessages]       = useState([]);
+  const [inputText, setInputText]     = useState("");
+  const [isLoading, setIsLoading]     = useState(false);
+  const [dbLoading, setDbLoading]     = useState(true);
+  const [completedUsers, setCompleted] = useState([]);
+  const [progress, setProgress]       = useState(0);
+  const [allResponses, setAllResponses] = useState({});
+  const [pinInput, setPinInput]       = useState("");
+  const [pinError, setPinError]       = useState("");
+  const [compilation, setCompilation] = useState("");
+  const [compiling, setCompiling]     = useState(false);
+  const [dbError, setDbError]         = useState("");
+  const [sessionId, setSessionId]     = useState(null);
+  const [testMode, setTestMode]       = useState(false);
+  const [saveStatus, setSaveStatus]   = useState("");
+  const bottomRef = useRef(null);
+
+  useEffect(()=>{ loadCompleted(); },[]);
+  useEffect(()=>{ bottomRef.current?.scrollIntoView({behavior:"smooth"}); },[messages,isLoading]);
+
+  async function loadCompleted() {
+    setDbLoading(true);
+    try {
+      const names = await dbGetNames();
+      setCompleted(names);
+    } catch(e) {
+      setDbError("Could not connect to database. Please refresh and try again.");
+    }
+    setDbLoading(false);
+  }
+
+  // Estimate progress based on keywords found in conversation
+  function estimateProgress(msgs) {
+    const text = msgs.map(m=>m.content).join(' ').toLowerCase();
+    const sectionKeywords = [
+      ['background','led you','experience','before'],
+      ['coffee','theory','belief','nothing else'],
+      ['name','age','struggling','success look'],
+      ['typical session','must-have','version 2','check-in'],
+      ['intelligent','chatbot','cbt','dbt','safety'],
+      ['therapist','counselor','alongside','dashboard'],
+      ['microphone','notification','how often','accessibility'],
+      ['free','paid','who pays','competitive'],
+      ['hipaa','privacy','version 1','anything'],
+    ];
+    let completed = 0;
+    for (const keywords of sectionKeywords) {
+      if (keywords.some(k => text.includes(k))) completed++;
+    }
+    setProgress(Math.round((completed / TOTAL_SECTIONS) * 100));
+  }
+
+  async function callClaude(msgs, resolvedName, currentSessionId, isTest) {
+    setIsLoading(true);
+    setSaveStatus("");
+    try {
+      const res = await fetch("https://api.anthropic.com/v1/messages", {
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json",
+          "x-api-key": ANTHROPIC_KEY,
+          "anthropic-version":"2023-06-01",
+          "anthropic-dangerous-direct-browser-access":"true",
+        },
+        body: JSON.stringify({
+          model:"claude-haiku-4-5-20251001",
+          max_tokens:1024,
+          system: SYSTEM_PROMPT,
+          messages: msgs,
+        }),
+      });
+      const data = await res.json();
+      if (data.error) throw new Error(data.error.message);
+      const text = data.content?.find(b=>b.type==="text")?.text || "";
+      const updated = [...msgs, {role:"assistant",content:text}];
+      setMessages(updated);
+      estimateProgress(updated);
+      const isComplete = text.includes("INTERVIEW_COMPLETE");
+      try {
+        let sid = currentSessionId;
+        if (!sid) {
+          sid = await dbInsert(resolvedName, updated, isTest);
+          setSessionId(sid);
+        } else {
+          await dbUpdate(sid, updated, isComplete ? "complete" : "in_progress");
+        }
+        setSaveStatus("saved");
+        setTimeout(()=>setSaveStatus(""), 2000);
+      } catch(saveErr) {
+        setSaveStatus("error");
+      }
+      if (isComplete) {
+        if (!isTest) setCompleted(prev=>[...new Set([...prev, resolvedName])]);
+        setTimeout(()=>setScreen(isTest ? "test_complete" : "complete"), 1400);
+      }
+    } catch(e) {
+      setMessages(prev=>[...prev,{role:"assistant",content:"⚠ " + e.message + "\n\nPlease try again."}]);
+    }
+    setIsLoading(false);
+  }
+
+  async function startInterview(isTest) {
+    const name = nameInput.trim();
+    if (!name) return;
+    if (!isTest && completedUsers.includes(name)) { alert(name + " has already completed this interview."); return; }
+    const resolvedName = isTest ? name + " [TEST]" : name;
+    setUserName(resolvedName);
+    setTestMode(isTest || false);
+    setSessionId(null);
+    setScreen("interview");
+    const init = [{role:"user",content:"My name is " + resolvedName + ". I'm ready to begin the discovery interview."}];
+    setMessages(init);
+    await callClaude(init, resolvedName, null, isTest);
+  }
+
+  async function send() {
+    if (!inputText.trim() || isLoading) return;
+    const updated = [...messages, {role:"user",content:inputText}];
+    setMessages(updated);
+    setInputText("");
+    await callClaude(updated, userName, sessionId, testMode);
+  }
+
+  async function enterAdmin() {
+    if (pinInput !== ADMIN_PIN) { setPinError("Incorrect PIN."); return; }
+    try {
+      const responses = await dbGetAll();
+      setAllResponses(responses);
+      setScreen("admin");
+    } catch(e) { setPinError(`Database error: ${e.message}`); }
+  }
+
+  async function generateSummary() {
+    if (Object.keys(allResponses).length === 0) { alert("No completed interviews yet."); return; }
+    setCompiling(true);
+    const formatted = Object.entries(allResponses).map(([name,msgs])=>{
+      const convo = msgs
+        .filter(m=>m.role==="user"&&!m.content.includes("ready to begin"))
+        .map(m=>`${name}: ${m.content}`)
+        .join("\n");
+      return `=== ${name} ===\n${convo}`;
+    }).join("\n\n");
+    try {
+      const res = await fetch("https://api.anthropic.com/v1/messages", {
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json",
+          "x-api-key": ANTHROPIC_KEY,
+          "anthropic-version":"2023-06-01",
+          "anthropic-dangerous-direct-browser-access":"true",
+        },
+        body: JSON.stringify({
+          model:"claude-haiku-4-5-20251001",
+          max_tokens:2048,
+          messages:[{
+            role:"user",
+            content:`You are analyzing a product discovery interview for a mental health app. Based on the following interview transcript, produce a comprehensive product brief covering:\n\n## 1. APP CONCEPT SUMMARY\nCore idea, theory, and unique value proposition in 2-3 paragraphs.\n\n## 2. IDEAL USER AVATAR\nDetailed profile: demographics, struggles, goals, what they've tried before.\n\n## 3. MVP FEATURE SET\nMust-have features for launch, clearly listed with brief descriptions.\n\n## 4. AI & LOGIC REQUIREMENTS\nWhat intelligence, adaptivity, or clinical frameworks the app needs.\n\n## 5. PRACTITIONER INVOLVEMENT\nRole of therapists or clinicians, if any.\n\n## 6. PLATFORM & DEVICE REQUIREMENTS\nTarget platforms, device features needed, accessibility needs.\n\n## 7. BUSINESS MODEL\nMonetization approach, who pays, pricing model.\n\n## 8. COMPLIANCE & RISK FLAGS\nHIPAA, safety protocols, regulatory considerations to address.\n\n## 9. OPEN QUESTIONS\nImportant gaps or ambiguities that need follow-up before architecture begins.\n\nInterview transcript:\n\n${formatted}\n\nBe specific and direct. This brief will be used by a development team to plan and build the app.`
+          }],
+        }),
+      });
+      const data = await res.json();
+      if (data.error) throw new Error(data.error.message);
+      setCompilation(data.content?.find(b=>b.type==="text")?.text||"");
+    } catch(e) { setCompilation(`Error: ${e.message}`); }
+    setCompiling(false);
+  }
+
+  const visible = messages.filter(m=>!m.content.includes("ready to begin"));
+
+  // ── LANDING ─────────────────────────────────────────────────────────────
+  if (screen==="landing") return (
+    <div className="page">
+      <div className="header">
+        <span className="logo">Project Playbook</span>
+        <div style={{display:"flex",gap:"10px",alignItems:"center"}}>
+          <span className="project-tag">Mental Health App</span>
+          <button className="ghost" onClick={()=>setScreen("admin_login")}>Review Responses</button>
+        </div>
+      </div>
+      <div className="main">
+        <div className="eyebrow">Product Discovery Interview</div>
+        <h1>Tell us about your <span className="blue">app</span>.</h1>
+        <p className="sub">
+          This interview covers 9 areas of your app concept — from the core idea and ideal user, to features, AI logic, clinical considerations, and business model. Take your time. The more detail you give, the better the development team can build what you're envisioning.
+          <br/><br/>
+          Plan for 30–45 minutes. You can pause and return, but your session will restart from the beginning — so it's best to complete it in one sitting.
+        </p>
+
+        {dbError && <div className="notice" style={{borderColor:"#c4606033",color:"#c46060"}}>{dbError}</div>}
+        {!dbError && dbLoading && <div className="notice">Connecting…</div>}
+
+        {completedUsers.length > 0 && (
+          <div style={{marginBottom:"28px"}}>
+            <div className="lbl">Completed</div>
+            {completedUsers.map(n=><span key={n} className="chip">✓ {n}</span>)}
+          </div>
+        )}
+
+        <div style={{marginBottom:"24px",background:"#0e1018",border:"1px solid #1a2030",padding:"20px 24px"}}>
+          <div className="lbl">9 topic areas covered</div>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:"6px 16px"}}>
+            {SECTIONS.map((s,i)=>(
+              <div key={s.id} style={{fontSize:"13px",color:"#4a5878",lineHeight:"1.6"}}>
+                <span style={{color:"#2a3450",marginRight:"8px"}}>{i+1}.</span>{s.label}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="card">
+          <label className="lbl">Your name</label>
+          <input type="text" placeholder="Enter your first name" value={nameInput} onChange={e=>setNameInput(e.target.value)} onKeyDown={e=>e.key==="Enter"&&startInterview(false)} autoFocus/>
+          <button className="btn" onClick={()=>startInterview(false)} disabled={dbLoading||!nameInput.trim()}>
+            {dbLoading?"Connecting…":"Begin Discovery Interview →"}
+          </button>
+        </div>
+
+        <div style={{marginTop:"8px",padding:"14px 18px",background:"#0a0c12",border:"1px solid #2a3450",borderStyle:"dashed"}}>
+          <div style={{fontSize:"11px",letterSpacing:".22em",textTransform:"uppercase",color:"#3a4460",marginBottom:"8px"}}>Developer / Connection Test</div>
+          <p style={{fontSize:"13px",color:"#2a3450",lineHeight:"1.65",marginBottom:"12px"}}>
+            Test Mode runs a real interview but tags the session as a test in the database so it can be easily identified and deleted. Use this to verify the Supabase connection before sending the link to the app creator.
+          </p>
+          <button
+            style={{background:"transparent",border:"1px solid #2a3450",color:"#3a5878",padding:"8px 18px",fontSize:"11px",letterSpacing:".18em",textTransform:"uppercase",fontFamily:"'DM Sans',sans-serif",cursor:"pointer"}}
+            onClick={()=>startInterview(true)}
+            disabled={dbLoading||!nameInput.trim()}
+          >
+            Run Test Interview →
+          </button>
+          {!nameInput.trim() && <span style={{fontSize:"12px",color:"#2a3450",marginLeft:"12px"}}>Enter a name above first</span>}
+        </div>
+
+        <p style={{marginTop:"20px",fontSize:"12px",color:"#1e2840",fontFamily:"'DM Sans',sans-serif",lineHeight:"1.7"}}>
+          Responses are saved to a secure shared database after every exchange. You can pause and return — your progress will be preserved.
+        </p>
+      </div>
+    </div>
+  );
+
+  // ── INTERVIEW ────────────────────────────────────────────────────────────
+  if (screen==="interview") return (
+    <div className="page" style={{height:"100vh"}}>
+      <div className="header">
+        <span className="logo">Project Playbook — Discovery</span>
+        <div style={{display:"flex",alignItems:"center",gap:"12px"}}>
+          {testMode && <span style={{fontSize:"10px",letterSpacing:".2em",textTransform:"uppercase",color:"#3a5878",background:"#0a0c12",border:"1px solid #2a3450",padding:"3px 10px"}}>Test Mode</span>}
+          {saveStatus==="saved" && <span style={{fontSize:"11px",color:"#3a6e4a",fontFamily:"'DM Sans',sans-serif"}}>&#x2713; Saved</span>}
+          {saveStatus==="error" && <span style={{fontSize:"11px",color:"#c46060",fontFamily:"'DM Sans',sans-serif"}}>Save failed</span>}
+          <span style={{fontSize:"12px",color:"#3a4460",fontFamily:"'DM Sans',sans-serif"}}>{userName.replace(" [TEST]","")}</span>
+        </div>
+      </div>
+      <div className="progress-bar" style={{width:"100%"}}>
+        <div className="progress-fill" style={{width:`${progress}%`}}/>
+      </div>
+      <div style={{flex:1,width:"100%",maxWidth:"680px",padding:"0 24px 20px",display:"flex",flexDirection:"column",overflow:"hidden"}}>
+        <div className="chat-wrap">
+          {visible.map((m,i)=>(
+            <div key={i} className={m.role==="assistant"?"bubble-ai":"bubble-user"}>
+              {m.content.replace("INTERVIEW_COMPLETE","").trim()}
+            </div>
+          ))}
+          {isLoading && (
+            <div className="bubble-ai" style={{padding:"16px 18px"}}>
+              <span className="dot"/>
+              <span className="dot" style={{animationDelay:".22s"}}/>
+              <span className="dot" style={{animationDelay:".44s"}}/>
+            </div>
+          )}
+          <div ref={bottomRef}/>
+        </div>
+        <div style={{flexShrink:0,paddingBottom:"4px"}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:"8px"}}>
+            {progress > 0
+              ? <span style={{fontSize:"11px",color:"#2a3450",fontFamily:"'DM Sans',sans-serif"}}>~{progress}% complete — progress saved automatically</span>
+              : <span/>}
+          </div>
+          <div className="send-row">
+            <input
+              className="send-input"
+              placeholder="Your response…"
+              value={inputText}
+              onChange={e=>setInputText(e.target.value)}
+              onKeyDown={e=>e.key==="Enter"&&!e.shiftKey&&send()}
+              disabled={isLoading}
+            />
+            <button className="send-btn" onClick={send} disabled={isLoading||!inputText.trim()}>Send</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  // ── COMPLETE ─────────────────────────────────────────────────────────────
+  if (screen==="complete") return (
+    <div className="page">
+      <div className="header"><span className="logo">Project Playbook</span></div>
+      <div className="main" style={{display:"flex",flexDirection:"column",alignItems:"center",textAlign:"center",paddingTop:"72px"}}>
+        <div style={{fontSize:"44px",marginBottom:"20px",color:"#6a9fd4"}}>✦</div>
+        <h2 style={{textAlign:"center"}}>Thank you, <span className="blue">{userName}</span>.</h2>
+        <p className="sub" style={{textAlign:"center",maxWidth:"440px",marginTop:"12px"}}>
+          Your discovery interview has been saved. The development team will review your responses and prepare a product brief for the next planning session.
+          <br/><br/>
+          Expect a follow-up with clarifying questions once they've reviewed everything.
+        </p>
+        <button className="outline" style={{width:"auto",padding:"10px 32px",marginTop:"8px"}} onClick={()=>{setScreen("landing");setNameInput("");}}>
+          ← Return to start
+        </button>
+      </div>
+    </div>
+  );
+
+  // ── TEST COMPLETE ────────────────────────────────────────────────────────
+  if (screen==="test_complete") return (
+    <div className="page">
+      <div className="header"><span className="logo">Project Playbook</span></div>
+      <div className="main" style={{display:"flex",flexDirection:"column",alignItems:"center",textAlign:"center",paddingTop:"72px"}}>
+        <div style={{fontSize:"44px",marginBottom:"20px",color:"#3a5878"}}>&#x2713;</div>
+        <h2 style={{textAlign:"center"}}>Test <span className="blue">Complete</span></h2>
+        <p className="sub" style={{textAlign:"center",maxWidth:"440px",marginTop:"12px"}}>
+          Test session saved successfully. Check your Supabase Table Editor — you should see a row in <code style={{background:"#0e1018",padding:"2px 6px",fontSize:"13px"}}>mha_interviews</code> with <code style={{background:"#0e1018",padding:"2px 6px",fontSize:"13px"}}>is_test = true</code>.
+          <br/><br/>
+          You can delete the test row from Supabase once confirmed. The database connection is working correctly.
+        </p>
+        <button className="outline" style={{width:"auto",padding:"10px 32px",marginTop:"8px"}} onClick={()=>{setScreen("landing");setNameInput("");setSessionId(null);setTestMode(false);}}>
+          ← Return to start
+        </button>
+      </div>
+    </div>
+  );
+
+  // ── ADMIN LOGIN ──────────────────────────────────────────────────────────
+  if (screen==="admin_login") return (
+    <div className="page">
+      <div className="header"><span className="logo">Project Playbook</span></div>
+      <div className="main" style={{maxWidth:"420px"}}>
+        <div className="eyebrow">Restricted</div>
+        <h2>Review Responses</h2>
+        <p className="sub">Development team access only.</p>
+        <div className="card">
+          <label className="lbl">PIN</label>
+          <input type="password" placeholder="••••" value={pinInput} onChange={e=>setPinInput(e.target.value)} onKeyDown={e=>e.key==="Enter"&&enterAdmin()} autoFocus/>
+          {pinError && <div className="err">{pinError}</div>}
+          <button className="btn" onClick={enterAdmin}>Enter</button>
+          <button className="outline" onClick={()=>setScreen("landing")}>← Back</button>
+        </div>
+      </div>
+    </div>
+  );
+
+  // ── ADMIN DASHBOARD ──────────────────────────────────────────────────────
+  if (screen==="admin") return (
+    <div className="page">
+      <div className="header">
+        <span className="logo">Project Playbook — Discovery Review</span>
+        <button className="ghost" onClick={()=>setScreen("landing")}>← Exit</button>
+      </div>
+      <div className="main">
+        <h2 style={{marginBottom:"6px"}}>Discovery <span className="blue">Responses</span></h2>
+        <p className="sub">{Object.keys(allResponses).length} interview{Object.keys(allResponses).length!==1?"s":""} completed.</p>
+
+        {Object.keys(allResponses).length===0 && (
+          <p style={{color:"#2a3450",fontFamily:"'DM Sans',sans-serif",fontSize:"14px"}}>No interviews completed yet.</p>
+        )}
+
+        {Object.entries(allResponses).map(([name,msgs])=>(
+          <div key={name} className="response-block" style={{marginBottom:"24px"}}>
+            <div className="lbl">{name}</div>
+            {msgs.filter(m=>!m.content.includes("ready to begin")).map((m,i)=>(
+              <div key={i} style={{marginBottom:"14px"}}>
+                <div className="msg-role" style={{color:m.role==="user"?"#6a9fd4":"#3a4460"}}>
+                  {m.role==="user"?name:"Interviewer"}
+                </div>
+                <div className="msg-text">{m.content.replace("INTERVIEW_COMPLETE","").trim()}</div>
+              </div>
+            ))}
+          </div>
+        ))}
+
+        <div style={{borderTop:"1px solid #1a2030",paddingTop:"28px"}}>
+          <div className="lbl">Product Brief Generator</div>
+          <p style={{fontSize:"14px",color:"#3a4460",fontFamily:"'DM Sans',sans-serif",lineHeight:"1.7",marginBottom:"16px"}}>
+            Generates a comprehensive product brief from the interview — app concept, user avatar, MVP features, AI requirements, compliance flags, and open questions.
+          </p>
+          <button
+            className="btn"
+            style={{marginTop:0,background:compiling?"#1a2030":undefined,color:compiling?"#3a4460":undefined}}
+            onClick={generateSummary}
+            disabled={compiling||Object.keys(allResponses).length===0}
+          >
+            {compiling?"Generating product brief…":"Generate Product Brief"}
+          </button>
+          {compilation && <div className="compilation-box">{compilation}</div>}
+        </div>
+      </div>
+    </div>
+  );
+
+  return null;
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>
